@@ -1,0 +1,60 @@
+.vimBar {
+  position: absolute;
+  background: #222;
+  letter-spacing: 3px;
+  color: wheat;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  padding: .5em;
+  height: 1rem;
+  top: 0;
+  right: 0;
+}
+
+.ConceptChooser {
+  border-bottom: thin solid rgba(255, 255, 255, .1);
+  padding: 0;
+  padding-bottom: 3px;
+
+  .MuiInputBase-root {
+    display: inline;
+  }
+
+  input {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: small;
+    padding: 0;
+    border: none;
+    margin: 0rem .5rem .5rem;
+    text-align: center;
+    padding-bottom: 3px;
+    border-bottom: thin solid rgba(#fff, .1);
+    display: inline;
+    width: auto;
+
+    .root.dark & {
+      color: wheat;
+
+      &:disabled { color: #ccc; opacity: .5;}
+    }
+
+    &:disabled {
+      border-bottom: none;
+      display: inline;
+      flex: 0 1;
+    }
+  }
+
+  button {
+    text-transform: none;
+
+    .root.dark & {
+      color: white;
+      border: thin solid rgba(#fff, .1);
+    }
+  }
+
+  .ConfirmedInputWrapper {
+    display: inline;
+    width: auto;
+  }
+}
