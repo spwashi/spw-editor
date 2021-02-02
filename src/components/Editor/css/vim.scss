@@ -10,6 +10,10 @@
   right: 0;
 }
 
+.MuiInputBase-input {
+  color: white;
+}
+
 .ConceptChooser {
   border-bottom: thin solid rgba(255, 255, 255, .1);
   padding: 0;
@@ -44,7 +48,7 @@
     }
   }
 
-  button {
+  button, input {
     text-transform: none;
 
     .root.dark & {

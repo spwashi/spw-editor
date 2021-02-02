@@ -10,6 +10,7 @@ import {editor as nsEditor} from 'monaco-editor/esm/vs/editor/editor.api';
 
 type Editor = nsEditor.IStandaloneCodeEditor;
 
+export type EditorContentController = [string, (s: string) => any];
 export type EditorProps =
     {
         /**
@@ -23,9 +24,9 @@ export type EditorProps =
         /**
          * Array of [value, valueSetter]
          */
-        controller?: [string, (s: string) => any];
+        controller?: EditorContentController;
     } &
-    IEditorPreferences ;
+    IEditorPreferences;
 
 function VimBar({editor}: { editor: Editor }) {
     const vimBar = useRef() as MutableRefObject<HTMLDivElement>;
@@ -67,7 +68,13 @@ class ErrorBoundary extends React.Component {
  * Editor for the Spw Programming Language.
  *
  */
-export const SpwEditor: FC<EditorProps> = ({fontSize, size, content = '{ & }', controller = [content, () => {}], vim = false}) => {
+export const SpwEditor: FC<EditorProps> = ({
+                                               fontSize,
+                                               size,
+                                               content = '{ & }',
+                                               controller = [content, () => {}],
+                                               vim = false,
+                                           }) => {
     // props
     const [text, setText] = controller;
     const {w, h, options} = useEditorPreferences({fontSize, size}, text)
@@ -84,9 +91,9 @@ export const SpwEditor: FC<EditorProps> = ({fontSize, size, content = '{ & }', c
 
             editor.addAction(
                 {
-                    id:    'blur-to-element',
+                    id: 'blur-to-element',
                     label: 'Focus label selector',
-                    run:   ed => {
+                    run: ed => {
                         focusConceptChooser();
                     },
                 },

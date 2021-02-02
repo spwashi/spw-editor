@@ -10,7 +10,7 @@ module.exports = {
     },
     webpackFinal: async (config, {configType}) => {
         config.module.rules.push({
-                                     test:    /\.s?css$/,
+                                     test:    /\.scss$/,
                                      use:     ['style-loader', 'css-loader', 'postcss-loader', 'sass-loader'],
                                      include: path.resolve(__dirname, '../'),
                                  });

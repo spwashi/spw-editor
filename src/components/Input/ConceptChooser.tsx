@@ -1,6 +1,7 @@
 import * as React from 'react';
-import {FC, useEffect, useState} from 'react';
+import {FC, useEffect, useMemo} from 'react';
 import {CommittedInput, InputCommitType} from './CommittedInput';
+import {useLocalStorage} from '../../hooks/useLocalStorage';
 
 function getConceptSelectionIndexElementID(i: number) {
     return `ConceptSelectionControl--${i}`;
@@ -16,7 +17,22 @@ export function focusConceptChooser() {
 
 type ConceptControllerObj = { [name: string]: string };
 
-type IConceptDescription = { id: string, components: unknown };
+export type IConceptDescription = {
+    /**
+     * What's been used to generate the id
+     */
+    readonly seed?: string;
+
+    /**
+     * Unique identifier for the concept
+     */
+    readonly id: string | null;
+
+    /**
+     * A list of identifiers used to create the seed of this concept identifier
+     */
+    readonly components: string[];
+};
 
 export interface ConceptChooserProps {
     /**
@@ -28,7 +44,7 @@ export interface ConceptChooserProps {
      * Function called when the Concept ID changes
      * @param concept
      */
-    handleConceptChange?: (concept: IConceptDescription) => unknown;
+    onConceptChange?: (concept: IConceptDescription) => unknown;
 
     /**
      * An array of values used to fill in portions of the array
@@ -43,7 +59,7 @@ export interface ConceptChooserProps {
     /**
      * Whether a truthy value in an index of the {@see defaultComponents} property can be overridden by an input
      */
-    overridableDefaults?: boolean;
+    allowOverriddenDefaults?: boolean;
 }
 
 let alertChanged                                     = ({id}: IConceptDescription) => alert('concept changed: ' + id);
@@ -57,86 +73,104 @@ let alertChanged                                     = ({id}: IConceptDescriptio
  * @param overridableDefaults
  * @constructor
  */
-export const ConceptChooser: FC<ConceptChooserProps> = ({
-                                                            count = 2,
-                                                            commitTrigger = 'blur',
-                                                            handleConceptChange = alertChanged,
-                                                            defaultComponents = ['hello', 'world'],
-                                                            overridableDefaults = true,
-                                                        } = {}) => {
-    const states: Array<[string, (name: string) => unknown]> = [];
-    // const [conceptControllers, setConceptControllers] = useLocalStorage<ConceptControllerObj>(`concepts(${count})`, {});
-    const [conceptControllers, setConceptControllers]        = useState<ConceptControllerObj>({});
-    console.log(defaultComponents)
-    useEffect(
-        () => {
-            for (const [index] of Object.entries(conceptControllers)) {
-                let number = parseInt(index);
-                if (`${number}` !== index || (number >= count) || number < 0) {
-                    delete conceptControllers[index];
+export const ConceptChooser: FC<ConceptChooserProps> =
+    ({
+         count = 2,
+         commitTrigger = 'blur',
+         onConceptChange = alertChanged,
+         defaultComponents = ['hello', 'world'],
+         allowOverriddenDefaults = true,
+     } = {},
+    ) => {
+        const states: Array<[string, (name: string) => unknown]> =
+                  [];
+
+        const [conceptControllers, setConceptControllers] =
+                  useLocalStorage<ConceptControllerObj>(`concepts(${count})`, {});
+
+        // const [conceptControllers, setConceptControllers]        = useState<ConceptControllerObj>({});
+        useEffect(
+            () => {
+                for (const [index] of Object.entries(conceptControllers)) {
+                    let number = parseInt(index);
+                    if (`${number}` !== index || (number >= count) || number < 0) {
+                        delete conceptControllers[index];
+                    }
                 }
-            }
-            defaultComponents?.forEach((v, i) => conceptControllers[i] = v)
-            setConceptControllers(conceptControllers);
-        },
-        [...defaultComponents || []],
-    )
-    for (let n = 0; n < count; n++) {
-        states.push([
-                        conceptControllers[n],
-                        (
-                            index => (
-                                (state: any) => {
-                                    return setConceptControllers(
-                                        // @ts-ignore
-                                        (conceptTree): ConceptControllerObj => ({
-                                            ...conceptTree,
-                                            [`${index}`]: state,
-                                        }),
-                                    );
-                                }
-                            )
-                        )
-                        (n)
-                        ,
-                    ]);
-    }
-
-    const conceptComponents = states.map(([s]) => s);
-    const concept           = conceptComponents.join('/');
-    useEffect(
-        () => {
-            handleConceptChange({
-                                    id:         require('crypto').createHash('md5').update(concept).digest('hex'),
-                                    components: conceptComponents,
-                                })
-        },
-        [concept],
-    )
-
-    function editable(i: number) {
-        return overridableDefaults || !defaultComponents[i];
-    }
-
-    return (
-        <div className="ConceptChooser">
-            <div className={'ConceptChooserInputList'}>
-                {
-                    states.map(
-                        ([state, setState], i) =>
+                defaultComponents?.forEach((v, i) => conceptControllers[i] = v)
+                setConceptControllers(conceptControllers);
+            },
+            [...defaultComponents || []],
+        );
+        for (let n = 0; n < count; n++) {
+            states.push([
+                            conceptControllers[n],
                             (
-                                <CommittedInput id={getConceptSelectionIndexElementID(i)}
-                                                type="text"
-                                                disabled={!!(defaultComponents[i] && !overridableDefaults)}
-                                                value={
-                                                    ((overridableDefaults && defaultComponents[i]) ?? state) || state
+                                index => (
+                                    (state: any) => {
+                                        return setConceptControllers(
+                                            // @ts-ignore
+                                            (conceptTree): ConceptControllerObj => (
+                                                {
+                                                    ...conceptTree,
+                                                    [`${index}`]: state,
                                                 }
-                                                onValueChange={(e: string) => overridableDefaults && defaultComponents[i] && setState(e)}
-                                                commitTrigger={commitTrigger}/>
-                            ),
-                    )
-                }
+                                            ),
+                                        );
+                                    }
+                                )
+                            )
+                            (n)
+                            ,
+                        ]);
+        }
+
+        const conceptComponents = useMemo(() => states.map(([s]) => s || '-'), [states]);
+        const concept           = useMemo(() => conceptComponents.join('/').replace(/(\/-)+$/g, ''), [conceptComponents]);
+        useEffect(
+            () => {
+                const conceptDescription: IConceptDescription = {
+                    id:         require('crypto').createHash('md5').update(concept).digest('hex'),
+                    seed:       concept,
+                    components: conceptComponents,
+                };
+                onConceptChange(conceptDescription)
+            },
+            [concept],
+        )
+
+
+        return (
+            <div className="ConceptChooser">
+                <div className={'ConceptChooserInputList'} style={{display: 'inline-flex'}}>
+                    {
+                        states.map(
+                            ([state, setState], i) =>
+                                (
+                                    <CommittedInput key={i}
+                                                    type="text"
+                                                    name={`${i + 1}`}
+                                                    id={getConceptSelectionIndexElementID(i)}
+                                                    disabled={!!(defaultComponents[i] && !allowOverriddenDefaults)}
+                                                    value={
+                                                        (
+                                                            (allowOverriddenDefaults && defaultComponents[i] && !state)
+                                                            ?? state
+                                                        )
+                                                        || state
+                                                        || ''
+                                                    }
+                                                    onValueChange={
+                                                        (e: string) =>
+                                                            (!allowOverriddenDefaults ?? false)
+                                                            ? (!defaultComponents[i] && setState(e))
+                                                            : setState(e)
+                                                    }
+                                                    commitTrigger={commitTrigger}/>
+                                ),
+                        )
+                    }
+                </div>
             </div>
-        </div>
-    );
-};
+        );
+    };

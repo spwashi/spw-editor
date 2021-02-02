@@ -1,11 +1,37 @@
 // Hook
 import * as React from 'react';
 import {useCallback, useEffect, useState} from 'react';
-import {Button, Input, InputProps} from '@material-ui/core';
+import {Button, Input, InputProps, styled} from '@material-ui/core';
 
 export type InputCommitType = 'button' | 'blur';
 
-export function CommittedInput({value, onValueChange, commitTrigger, ...args}: InputProps & { onValueChange: (v: any) => unknown, commitTrigger: InputCommitType }) {
+export const StyledInput  =
+                 styled(Input)(
+                     {
+                         borderBottom: 'thin solid red',
+                         color:        'white',
+                         marginRight:  '1rem',
+                     },
+                 );
+export const StyledButton =
+                 styled(Button)(
+                     {
+                         borderBottom:  'thin solid red',
+                         color:         'white',
+                         fontSize:      '10px',
+                         marginRight:   '.5rem',
+                         textTransform: 'none',
+                         padding:       '.25rem',
+                     },
+                 );
+
+export function CommittedInput({
+                                   value,
+                                   name,
+                                   onValueChange,
+                                   commitTrigger,
+                                   ...args
+                               }: InputProps & { onValueChange: (v: any) => unknown, commitTrigger: InputCommitType }) {
     const [tentativeValue, setTentativeValue] = useState(value);
 
     const commit = useCallback(() => onValueChange(tentativeValue),
@@ -19,19 +45,48 @@ export function CommittedInput({value, onValueChange, commitTrigger, ...args}: I
         [value],
     )
     return (
-        <div className="ConfirmedInputWrapper">
-            <Input
-                {...args}
-                value={tentativeValue}
-                onChange={e => setTentativeValue(e.target.value)}
-                onBlur={commitTrigger !== 'blur' ? undefined : e => commit()}
-            />
+        <div className="ConfirmedInputWrapper"
+             style={
+                 {
+                     padding:        '5px',
+                     display:        'flex',
+                     justifyContent: 'center',
+                     alignItems:     'center',
+                     fontFamily:     'JetBrains Mono',
+                 }
+             }>
+            <label style={{
+                border:         'thin solid red',
+                color:          'white',
+                padding:        '3px',
+                width:          '7px',
+                height:         '7px',
+                borderRadius:   '100%',
+                display:        'inline-flex',
+                justifyContent: 'center',
+                alignItems:     'center',
+                fontSize:       '15px',
+                marginRight:    '15px',
+            }}
+                   htmlFor={name}>
+                <span style={{position: 'absolute'}}>{name}</span>
+            </label>
+            <StyledInput {...args}
+                         name={name}
+                         value={tentativeValue}
+                         onChange={e => setTentativeValue(e.target.value)}
+                         onBlur={commitTrigger !== 'blur' ? undefined : e => commit()}/>
             {
                 (
                     () => {
+                        if (tentativeValue === value) return null;
                         switch (commitTrigger) {
                             case 'button':
-                                return <Button onClick={commit}>Go</Button>;
+                                return (
+                                    <StyledButton onClick={commit}>
+                                        ✔
+                                    </StyledButton>
+                                );
                             default:
                                 return null;
                         }

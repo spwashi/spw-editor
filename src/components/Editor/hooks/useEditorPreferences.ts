@@ -34,7 +34,7 @@ export function useEditorPreferences(preferences: IEditorPreferences, content: s
                   showFoldingControls:   'always',
                   scrollBeyondLastLine:  false,
                   quickSuggestionsDelay: 300,
-                  wordWrap:              'bounded',
+                  wordWrap:              'off',
                   wordWrapColumn:        400,
               };
     return {w, h, options};

@@ -1,1 +1,1 @@
-export {SpwEditor} from '../../components/Editor/Editor'
+export {SpwEditor} from './components/Editor/Editor'

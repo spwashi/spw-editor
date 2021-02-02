@@ -28,7 +28,7 @@ const ConceptChooserTemplate: Story<ConceptChooserProps> = (args) => {
             `}</style>
             <ConceptChooser
                 {...args}
-                handleConceptChange={setSelectedConcept}
+                onConceptChange={setSelectedConcept}
             />
             <pre className="conceptID">{JSON.stringify(selectedConcept, null, 3)}</pre>
         </div>
