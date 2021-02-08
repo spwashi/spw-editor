@@ -1,8 +1,11 @@
 import * as React from 'react';
+import {useState} from 'react';
 import {Meta, Story} from '@storybook/react';
 import {EditorProps, SpwEditor} from '../src/components/Editor/Editor';
 import {createMuiTheme, ThemeProvider} from '@material-ui/core';
 import {ControlledEditor} from '../src/components/Editor/ControlledEditor';
+import {IConceptDescription} from '../src/components/Input/ConceptChooser';
+import {useLocalStorage} from '../src/hooks/useLocalStorage';
 
 
 const meta: Meta = {
@@ -49,16 +52,23 @@ const ControlledEditorTemplate: Story<EditorProps & { content: '{ & }' }> =
               const fontSize            = 17;
               const defaultValue        = '{ & }';
               const conceptIdCount      = 5;
-              const defaultComponents   = ['hello'];
+              const defaultComponents   = [];
               const canOverrideDefaults = true;
 
-              return ControlledEditor({
-                                        defaultValue:        defaultValue,
-                                        conceptIdCount:      conceptIdCount,
-                                        defaultComponents:   defaultComponents,
-                                        canOverrideDefaults: canOverrideDefaults,
-                                        fontSize:            fontSize,
-                                    });
+              // base + params
+              const conceptChoiceController = useState<IConceptDescription>({id: null, components: []});
+              const {id: conceptID}         = conceptChoiceController[0];
+              // init
+              const contentController       = useLocalStorage<string>(`editor.concept=${conceptID}`, defaultValue);
+              return <ControlledEditor defaultValue={defaultValue}
+                                       conceptIdCount={conceptIdCount}
+                                       defaultComponents={defaultComponents}
+                                       canOverrideDefaults={canOverrideDefaults}
+                                       fontSize={fontSize}
+                                       conceptChoiceController={conceptChoiceController}
+                                       conceptContentController={contentController}
+
+              />;
           };
 
 

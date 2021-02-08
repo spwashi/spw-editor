@@ -1,0 +1,1 @@
+export type ConceptContentController = [string, (s: string) => void];

@@ -1,9 +1,7 @@
-import React, {FC, MutableRefObject, useEffect, useRef, useState} from 'react';
-import {ControlledEditor as MonacoEditor} from '@monaco-editor/react';
+import React, {FC, MutableRefObject, useEffect, useMemo, useRef, useState} from 'react';
+import {default as MonacoEditor} from '@monaco-editor/react';
 import {initSpw} from './util/initSpw';
-// import './css/font.scss';
-// import './css/vim.scss';
-import {IEditorPreferences, useEditorPreferences} from './hooks/useEditorPreferences';
+import {getEditorConfiguration, IEditorPreferences} from './hooks/getEditorConfiguration';
 import {useVimMode} from './hooks/useVimMode';
 import {focusConceptChooser} from '../Input/ConceptChooser';
 import {editor as nsEditor} from 'monaco-editor/esm/vs/editor/editor.api';
@@ -72,13 +70,16 @@ export const SpwEditor: FC<EditorProps> = ({
                                                fontSize,
                                                size,
                                                content = '{ & }',
-                                               controller = [content, () => {}],
+                                               controller: [...controller] = [content, () => {}],
                                                vim = false,
-                                           }) => {
+                                           }: EditorProps) => {
     // props
     const [text, setText] = controller;
-    const {w, h, options} = useEditorPreferences({fontSize, size}, text)
-
+    useEffect(() => {
+        if (typeof text !== 'string') {setText('error')}
+    }, [text])
+    const {w, h, options} = useMemo(() => getEditorConfiguration({fontSize, size}, text),
+                                    [fontSize, text, size])
     // init
     useEffect(() => { initSpw() }, [])
     const [editor, setEditor] = useState<Editor | null>(null);
@@ -91,9 +92,9 @@ export const SpwEditor: FC<EditorProps> = ({
 
             editor.addAction(
                 {
-                    id: 'blur-to-element',
+                    id:    'blur-to-element',
                     label: 'Focus label selector',
-                    run: ed => {
+                    run:   ed => {
                         focusConceptChooser();
                     },
                 },
@@ -108,12 +109,16 @@ export const SpwEditor: FC<EditorProps> = ({
     return (
         <ErrorBoundary>
             <div style={{display: 'block', width: '100%'}}>
-                <MonacoEditor editorDidMount={(_, editor) => (setEditor(editor), initSpw())}
-                              onChange={(_ev, val) => setText(val || '')}
-                              language="spw"
-                              theme="spw-dark"
-                              value={text || ''}
-                              height={h} width={w} options={options}/>
+                <MonacoEditor
+                    onChange={(val, _ev) => {
+                        if (typeof val !== 'string') return;
+                        setText(val || '');
+                    }}
+                    onMount={setEditor}
+                    language="spw"
+                    theme="spw-dark"
+                    value={text || ''}
+                    height={h} width={w} options={options}/>
                 {!editor || !vim ? null : <VimBar editor={editor}/>}
             </div>
         </ErrorBoundary>
