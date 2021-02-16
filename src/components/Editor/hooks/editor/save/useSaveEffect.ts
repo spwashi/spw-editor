@@ -1,10 +1,10 @@
 import {useCallback, useEffect, useRef} from 'react';
-import {SaveAttempt, SaveResponse} from './useSaveEffect.types';
-import {useSaveAttemptInitializer} from './useSaveEffect.initializer.effect';
+import {EditorSaveAttempt, EditorSaveResponse} from './types';
+import {useSaveAttemptInitializer} from './useSaveAttemptInitializer';
 
-type SaveHandlers =
+export type SaveHandlers =
     {
-        onSaveStart?: () => Promise<SaveResponse>;
+        onSaveStart?: () => Promise<EditorSaveResponse>;
 
     };
 
@@ -15,8 +15,8 @@ type SaveHandlers =
  * @param {SaveHandlers} saveHandlers
  */
 export function useSaveEffect(catalystKey: any, saveHandlers: SaveHandlers = {}) {
-    const currSaveRef        = useRef<SaveAttempt | null>(null);
-    const setSaveAttempt     = useCallback((saveAttempt: SaveAttempt | null) => (currSaveRef.current = saveAttempt),
+    const currSaveRef        = useRef<EditorSaveAttempt | null>(null);
+    const setSaveAttempt     = useCallback((saveAttempt: EditorSaveAttempt | null) => (currSaveRef.current = saveAttempt),
                                            [currSaveRef]);
     const currentSaveAttempt = currSaveRef.current;
 
@@ -29,7 +29,7 @@ export function useSaveEffect(catalystKey: any, saveHandlers: SaveHandlers = {})
                       // if there is a handler
                       if (onSaveStart) {
                           try {
-                              const result: SaveResponse = await onSaveStart();
+                              const result: EditorSaveResponse = await onSaveStart();
                               if (!currentSaveAttempt) return;
                               currentSaveAttempt.completion.success     = true;
                               currentSaveAttempt.completion.rawResponse = result;

@@ -4,7 +4,7 @@
 type FrontendTimestamp = number;
 type BackendTimestamp = number;
 
-export interface SaveAttempt {
+export interface EditorSaveAttempt {
     // Set to the timestamp a client has initiated a save attempt
     initiated: FrontendTimestamp | null,
     completion: {
@@ -15,7 +15,6 @@ export interface SaveAttempt {
     }
 }
 
-export interface SaveResponse {
+export interface EditorSaveResponse {
     saved: boolean;
-
 }

@@ -3,7 +3,7 @@ import {useState} from 'react';
 import {Meta, Story} from '@storybook/react';
 import {EditorProps, SpwEditor} from '../src/components/Editor/Editor';
 import {createMuiTheme, ThemeProvider} from '@material-ui/core';
-import {ControlledEditor} from '../src/components/Editor/ControlledEditor';
+import {UseEditorSaveKey} from '../src/components/Editor/hooks/editor/save/ControlledEditor';
 import {IConceptDescription} from '../src/components/Input/ConceptChooser';
 import {useLocalStorage} from '../src/hooks/useLocalStorage';
 
@@ -47,20 +47,20 @@ const EditorTemplate: Story<EditorProps & { content: string }> =
           };
 
 
-const ControlledEditorTemplate: Story<EditorProps & { content: '{ & }' }> =
+const ControlledEditorTemplate: Story<EditorProps & { content: string }> =
           ({}) => {
-              const fontSize            = 17;
-              const defaultValue        = '{ & }';
-              const conceptIdCount      = 5;
-              const defaultComponents   = [];
-              const canOverrideDefaults = true;
+              const fontSize                    = 17;
+              const defaultValue                = '';
+              const conceptIdCount              = 5;
+              const defaultComponents: string[] = [];
+              const canOverrideDefaults         = true;
 
               // base + params
               const conceptChoiceController = useState<IConceptDescription>({id: null, components: []});
               const {id: conceptID}         = conceptChoiceController[0];
               // init
               const contentController       = useLocalStorage<string>(`editor.concept=${conceptID}`, defaultValue);
-              return <ControlledEditor defaultValue={defaultValue}
+              return <UseEditorSaveKey defaultValue={defaultValue}
                                        conceptIdCount={conceptIdCount}
                                        defaultComponents={defaultComponents}
                                        canOverrideDefaults={canOverrideDefaults}

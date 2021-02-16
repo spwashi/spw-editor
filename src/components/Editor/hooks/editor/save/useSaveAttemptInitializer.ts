@@ -1,7 +1,7 @@
-import {SaveAttempt} from './useSaveEffect.types';
-import {useDidMountEffect} from '../../../hooks/useDidMountEffect';
+import {EditorSaveAttempt} from './types';
+import {useDidMountEffect} from '../../../../../hooks/useDidMountEffect';
 
-function initializeSaveAttempt(): SaveAttempt {
+function initializeSaveAttempt(): EditorSaveAttempt {
     return {
         initiated:  Date.now(),
         completion: {completed: null},
@@ -14,7 +14,7 @@ function initializeSaveAttempt(): SaveAttempt {
  * @param setSaveAttempt
  */
 export function useSaveAttemptInitializer(key: any,
-                                          setSaveAttempt: (value: (SaveAttempt | null)) => void) {
+                                          setSaveAttempt: (value: (EditorSaveAttempt | null)) => void) {
     useDidMountEffect(
         () => {
             console.log('save key pressed');

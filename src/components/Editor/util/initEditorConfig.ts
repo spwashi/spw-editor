@@ -17,7 +17,7 @@ function countNewlines(content: string) {
     return (content || '').split('\n').length || 0;
 }
 
-export function getEditorConfiguration(preferences: IEditorPreferences, content: string) {
+export function initEditorConfig(preferences: IEditorPreferences, content: string) {
     const {size = {height: 500}, fontSize = 17} = preferences;
     const {width, fullScreen, height}           = size || {height: '100%', width: '100%'}
     const newlineCount                          = countNewlines(content) + 10;

@@ -1,11 +1,12 @@
 import React, {FC, MutableRefObject, useEffect, useMemo, useRef, useState} from 'react';
 import {default as MonacoEditor} from '@monaco-editor/react';
 import {initSpw} from './util/initSpw';
-import {getEditorConfiguration, IEditorPreferences} from './hooks/getEditorConfiguration';
-import {useVimMode} from './hooks/useVimMode';
+import {initEditorConfig, IEditorPreferences} from './util/initEditorConfig';
+import {useVimMode} from './hooks/editor/useVimMode';
 import {focusConceptChooser} from '../Input/ConceptChooser';
-import {editor as nsEditor} from 'monaco-editor/esm/vs/editor/editor.api';
+import {editor, editor as nsEditor} from 'monaco-editor/esm/vs/editor/editor.api';
 
+type IEditorMouseEvent = editor.IEditorMouseEvent;
 type Editor = nsEditor.IStandaloneCodeEditor;
 
 export type EditorContentController = [string, (s: string) => any];
@@ -23,6 +24,9 @@ export type EditorProps =
          * Array of [value, valueSetter]
          */
         controller?: EditorContentController;
+        events?: {
+            onMouseDown?: (e: IEditorMouseEvent) => void
+        }
     } &
     IEditorPreferences;
 
@@ -69,16 +73,19 @@ class ErrorBoundary extends React.Component {
 export const SpwEditor: FC<EditorProps> = ({
                                                fontSize,
                                                size,
-                                               content = '{ & }',
+                                               content = '',
                                                controller: [...controller] = [content, () => {}],
                                                vim = false,
+                                               events: {
+                                                           onMouseDown,
+                                                       }                   = {},
                                            }: EditorProps) => {
     // props
     const [text, setText] = controller;
     useEffect(() => {
         if (typeof text !== 'string') {setText('error')}
     }, [text])
-    const {w, h, options} = useMemo(() => getEditorConfiguration({fontSize, size}, text),
+    const {w, h, options} = useMemo(() => initEditorConfig({fontSize, size}, text),
                                     [fontSize, text, size])
     // init
     useEffect(() => { initSpw() }, [])
@@ -98,7 +105,8 @@ export const SpwEditor: FC<EditorProps> = ({
                         focusConceptChooser();
                     },
                 },
-            )
+            );
+            editor.onMouseDown(onMouseDown ?? (() => {}))
         },
         [editor],
     );

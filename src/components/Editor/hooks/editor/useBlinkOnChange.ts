@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import {useDidMountEffect} from '../../../hooks/useDidMountEffect';
+import {useDidMountEffect} from '../../../../hooks/useDidMountEffect';
 
 /**
  * Returns true for {timeoutDuration} whenever conceptID changes from its previous value.

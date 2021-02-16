@@ -125,7 +125,16 @@ export const ConceptChooser: FC<ConceptChooserProps> =
                         ]);
         }
 
-        const conceptComponents = useMemo(() => states.map(([s]) => s || '-'), [states]);
+        const conceptComponents = useMemo(() => {
+            const NIL = '-';
+            const arr = states.map(([s]) => s || NIL);
+            for (let i = arr.length - 1; i >= 0; i--) {
+                const item = arr[i];
+                if (item !== NIL) break;
+                arr.pop();
+            }
+            return arr;
+        }, [states]);
         const concept           = useMemo(() => conceptComponents.join('/').replace(/(\/-)+$/g, ''), [conceptComponents]);
         useEffect(
             () => {

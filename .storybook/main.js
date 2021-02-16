@@ -14,7 +14,7 @@ module.exports = {
                                      use:     ['style-loader', 'css-loader', 'postcss-loader', 'sass-loader'],
                                      include: [
                                          path.resolve(__dirname, '../'),
-                                         /node_modules/
+                                         /node_modules.monaco-editor/
                                      ],
                                  });
         return config;

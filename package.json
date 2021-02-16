@@ -82,7 +82,7 @@
   "dependencies": {
     "@material-ui/core": "^4.11.0",
     "@monaco-editor/react": "^4.0.9",
-    "@spwashi/language": "^1.1.0",
+    "@spwashi/language": "^1.2.13",
     "@spwashi/react-d3": "^0.1.1",
     "@types/dedent": "^0.7.0",
     "@types/styled-components": "^5.1.7",
