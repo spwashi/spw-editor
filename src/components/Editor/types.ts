@@ -14,6 +14,6 @@ export interface StandardEditorParams {
     conceptContentController: ConceptContentController;
 }
 
-export type EditorDisplayOptions = 'editor' | 'tree' | 'd3';
+export type EditorDisplayOption = 'editor' | 'tree' | 'd3';
 
 export type ConceptContentController = [string, (s: string) => void];

@@ -3,7 +3,7 @@ import {useState} from 'react';
 import {Meta, Story} from '@storybook/react';
 import {EditorProps, SpwEditor} from '../src/components/Editor/Editor';
 import {createMuiTheme, ThemeProvider} from '@material-ui/core';
-import {UseEditorSaveKey} from '../src/components/Editor/hooks/editor/save/ControlledEditor';
+import {ControlledEditor} from '../src/components/Editor/ControlledEditor';
 import {IConceptDescription} from '../src/components/Input/ConceptChooser';
 import {useLocalStorage} from '../src/hooks/useLocalStorage';
 
@@ -60,15 +60,13 @@ const ControlledEditorTemplate: Story<EditorProps & { content: string }> =
               const {id: conceptID}         = conceptChoiceController[0];
               // init
               const contentController       = useLocalStorage<string>(`editor.concept=${conceptID}`, defaultValue);
-              return <UseEditorSaveKey defaultValue={defaultValue}
+              return <ControlledEditor defaultValue={defaultValue}
                                        conceptIdCount={conceptIdCount}
                                        defaultComponents={defaultComponents}
                                        canOverrideDefaults={canOverrideDefaults}
                                        fontSize={fontSize}
                                        conceptChoiceController={conceptChoiceController}
-                                       conceptContentController={contentController}
-
-              />;
+                                       conceptContentController={contentController}/>;
           };
 
 

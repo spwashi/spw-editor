@@ -1,7 +1,7 @@
 import {IConceptDescription} from './components/Input/ConceptChooser';
 import * as React from 'react';
 
-export function Instructions({concept}: { concept: IConceptDescription }) {
+export function Instructions({selectedConcept}: { selectedConcept: IConceptDescription }) {
     const level                 = 0;
     const border                = 'thin solid rgba(255, 255, 255, .3)';
     const includeCurrentConcept = false;
@@ -76,7 +76,7 @@ export function Instructions({concept}: { concept: IConceptDescription }) {
                     }}>
                       <span className="body" style={{opacity: .5}}>
                           <h4><strong>Currently viewing:</strong></h4>
-                          <pre>{JSON.stringify(concept, null, 3)}</pre>
+                          <pre>{JSON.stringify(selectedConcept, null, 3)}</pre>
                       </span>
                     </small>
                 ) : null
