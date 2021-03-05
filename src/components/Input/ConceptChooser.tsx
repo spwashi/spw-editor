@@ -1,7 +1,8 @@
-import * as React from 'react';
-import {FC, useEffect, useMemo} from 'react';
+import React, {FC, useEffect, useMemo} from 'react';
 import {CommittedInput, InputCommitType} from './CommittedInput';
 import {useLocalStorage} from '../../hooks/useLocalStorage';
+
+import {createHash} from 'crypto';
 
 function getConceptSelectionIndexElementID(i: number) {
     return `ConceptSelectionControl--${i}`;
@@ -139,7 +140,7 @@ export const ConceptChooser: FC<ConceptChooserProps> =
         useEffect(
             () => {
                 const conceptDescription: IConceptDescription = {
-                    id:         require('crypto').createHash('md5').update(concept).digest('hex'),
+                    id:         createHash('md5').update(concept).digest('hex'),
                     seed:       concept,
                     components: conceptComponents,
                 };

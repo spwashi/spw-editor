@@ -1,6 +1,6 @@
-import {Runtime} from '@spwashi/language';
+import {Runtime} from '@spwashi/spw';
 import {IPosition} from 'monaco-editor';
-import {SpwNode} from '@spwashi/language/grammars/spw/src/ast/node/spwNode';
+import {SpwNode} from '@spwashi/spw/ast/node/spwNode';
 import {rule_1} from './rules/rule_1';
 import {NodeSelection} from './nodeSelection';
 

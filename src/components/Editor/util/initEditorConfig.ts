@@ -1,4 +1,4 @@
-import * as monacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
+import {editor} from 'monaco-editor/esm/vs/editor/editor.api';
 
 type IEditorScreenPreferencesSpecifiedSize = {
     width?: string | number,
@@ -25,7 +25,7 @@ export function initEditorConfig(preferences: IEditorPreferences, content: strin
     const w = fullScreen ? '100% ' : (/^\d+$/.test(`${width}`) ? width : `${width}px`);
     const h = fullScreen ? '100vh' : (height || Math.min(newlineCount * (fontSize + 7)));
 
-    const options: monacoEditor.editor.IEditorConstructionOptions =
+    const options: editor.IEditorConstructionOptions =
               {
                   fontSize:              fontSize,
                   minimap:               {enabled: false},

@@ -1,4 +1,4 @@
-import {isSpwNode, SpwNode} from '@spwashi/language/grammars/spw/src/ast/node/spwNode';
+import {isSpwNode, SpwNode} from '@spwashi/spw/ast/node/spwNode';
 
 export class NodeSelection {
     protected _nodes?: SpwNode[];

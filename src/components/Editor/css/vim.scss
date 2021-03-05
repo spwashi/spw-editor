@@ -12,6 +12,10 @@
 
 .MuiInputBase-input {
   color: white;
+
+  &:disabled {
+    color: grey;
+  }
 }
 
 .ConceptChooser {

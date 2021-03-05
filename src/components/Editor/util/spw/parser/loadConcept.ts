@@ -1,6 +1,6 @@
-import {Parser, Runtime, SpwDocument} from '@spwashi/language';
-import {spwParser} from '@spwashi/language/generated';
-import {getConceptId} from '@spwashi/language/grammars/spw/src/runtime/getConceptId';
+import { Runtime, SpwDocument, spwParser} from '@spwashi/spw';
+import {getConceptId} from '@spwashi/spw/runtime/getConceptId';
+import { Parser } from '@spwashi/spw/runtime/runtime';
 
 type Concept = { components: string[], body: string };
 export const initializeRuntime = () => { return new Runtime(spwParser as unknown as Parser) }

@@ -1,12 +1,10 @@
-import * as React from 'react';
-import {useState} from 'react';
+import React, {useState} from 'react';
 import {Meta, Story} from '@storybook/react';
 import {EditorProps, SpwEditor} from '../src/components/Editor/Editor';
 import {createMuiTheme, ThemeProvider} from '@material-ui/core';
 import {ControlledEditor} from '../src/components/Editor/ControlledEditor';
 import {IConceptDescription} from '../src/components/Input/ConceptChooser';
 import {useLocalStorage} from '../src/hooks/useLocalStorage';
-
 
 const meta: Meta = {
     title:      'Spw',
@@ -27,7 +25,10 @@ const meta: Meta = {
                                                       border:     'thin solid #ff0000',
                                                   },
                                               },
-                                              MuiInput:  {input: {color: 'white', fontFamily: 'Jetbrains Mono'}},
+                                              MuiInput:  {
+                                                  input:    {color: 'white', fontFamily: 'Jetbrains Mono'},
+                                                  disabled: {color: 'whitesmoke'},
+                                              },
                                           },
                                       })}
                 children={<Story/>}

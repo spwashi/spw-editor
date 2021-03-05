@@ -1,8 +1,7 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {initializeRuntime, loadConcept} from '../../util/spw/parser/loadConcept';
-import {Runtime} from '@spwashi/language';
-import {SpwNode} from '@spwashi/language/grammars/spw/src/ast/node/spwNode';
-import {useDidMountEffect} from '../../../../hooks/useDidMountEffect';
+import {Runtime} from '@spwashi/spw';
+import {SpwNode} from '@spwashi/spw/ast/node/spwNode';
 
 /**
  * When the concept changes, parse the document and return the most current syntax tree
@@ -20,7 +19,7 @@ export function useParser(src: string, components: string[], trigger?: any[]): {
     const [tree, setTree]       = useState<any>();
     const [ast, setAst]         = useState<any>();
     const [runtime, setRuntime] = useState<Runtime | undefined>();
-    useDidMountEffect(
+    useEffect(
         () => {
             runAsync()
                 .then(
@@ -28,7 +27,7 @@ export function useParser(src: string, components: string[], trigger?: any[]): {
                         setAst(ret.ast);
                         setTree(ret.tree);
                         setRuntime(ret.runtime);
-                        console.log('updated parse tree', {input: src})
+                        // console.log('updated parse tree', {input: src})
                     },
                 );
 
@@ -37,23 +36,23 @@ export function useParser(src: string, components: string[], trigger?: any[]): {
                 const _runtime           = initializeRuntime();
                 const conceptDescription = {components, body: `${src}`};
 
-                try {
+                // try {
                     const _ast =
                               await loadConcept(
                                   conceptDescription,
                                   _runtime,
                               ) as unknown as SpwNode | SpwNode[];
 
-
+console.log(_ast)
                     return {
                         ast:     _ast,
                         runtime: _runtime,
                         tree:    JSON.parse(JSON.stringify(_ast, (k, v) => v instanceof Set ? Array.from(v) : v)),
                     }
-                } catch (e) {
-                    console.log(`%c ${e.message}`, 'style: red');
-                    return {}
-                }
+                // } catch (e) {
+                //     console.log(`%c ${e.message}`, 'style: red');
+                //     return {}
+                // }
             }
         },
         trigger ?? [src],

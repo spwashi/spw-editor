@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import {useState} from 'react';
 import {Meta, Story} from '@storybook/react';
 import {ConceptChooser, ConceptChooserProps} from '../src/components/Input/ConceptChooser';

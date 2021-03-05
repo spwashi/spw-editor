@@ -1,43 +1,21 @@
-import {D3_Link, D3_Node} from './types';
-import {SpwNode} from '@spwashi/language/grammars/spw/src/ast/node/spwNode';
-
-type RawD3Node = SpwNode;
-
-class NodeCollection {
-    private _nodes: Array<D3_Node> = new Array<D3_Node>();
-
-    get nodes() {
-        return this._nodes;
-    }
-
-    push(node: RawD3Node) {
-        this._nodes.push(node);
-    }
-}
-
-class LinkCollection {
-    private _links: Array<D3_Link> = new Array<D3_Link>();
-
-    get links() {
-        return this._links;
-    }
-
-    push(link: { source: RawD3Node, target: RawD3Node }) {
-        this._links.push(link);
-    }
-}
+import {NodeData} from './node.spw.data';
+import {EdgeSpwData} from './edge.spw.data';
 
 
 export class D3DataCollection {
-    private _links = new LinkCollection();
+    private readonly _nodes: NodeData;
+    private readonly _links: EdgeSpwData;
 
-    get links(): LinkCollection {
+    constructor() {
+        this._nodes = new NodeData();
+        this._links = new EdgeSpwData(this._nodes);
+    }
+
+    get links(): EdgeSpwData {
         return this._links;
     }
 
-    private _nodes = new NodeCollection();
-
-    get nodes(): NodeCollection {
+    get nodes(): NodeData {
         return this._nodes;
     }
 }

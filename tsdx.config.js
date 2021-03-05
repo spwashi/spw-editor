@@ -9,8 +9,11 @@ module.exports = {
         config.external = false;
         config.plugins.push(
             [
-                scss(),
+                scss({
+
+                     }),
                 postcss({
+                            include: [/node_modules.monaco/],
                             use:     ['sass'],
                             modules: true,
                             extract: false,

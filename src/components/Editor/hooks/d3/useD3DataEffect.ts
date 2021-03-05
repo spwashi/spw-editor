@@ -5,7 +5,7 @@ export function useD3DataEffect(data: D3DataCollection | undefined) {
     useEffect(
         () => {
             if (!data) return;
-            // console.log(data);
+            // console.log(nodes);
 
         },
         [data],

@@ -1,7 +1,7 @@
 import React, {FC, MutableRefObject, useEffect, useMemo, useRef, useState} from 'react';
 import {default as MonacoEditor} from '@monaco-editor/react';
 import {initSpw} from './util/initSpw';
-import {initEditorConfig, IEditorPreferences} from './util/initEditorConfig';
+import {IEditorPreferences, initEditorConfig} from './util/initEditorConfig';
 import {useVimMode} from './hooks/editor/useVimMode';
 import {focusConceptChooser} from '../Input/ConceptChooser';
 import {editor, editor as nsEditor} from 'monaco-editor/esm/vs/editor/editor.api';
@@ -70,16 +70,16 @@ class ErrorBoundary extends React.Component {
  * Editor for the Spw Programming Language.
  *
  */
-export const SpwEditor: FC<EditorProps> = ({
-                                               fontSize,
-                                               size,
-                                               content = '',
-                                               controller: [...controller] = [content, () => {}],
-                                               vim = false,
-                                               events: {
-                                                           onMouseDown,
-                                                       }                   = {},
-                                           }: EditorProps) => {
+export function SpwEditor({
+                              fontSize,
+                              size,
+                              content = '',
+                              controller: [...controller] = [content, () => {}],
+                              vim = false,
+                              events: {
+                                          onMouseDown,
+                                      }                   = {},
+                          }: EditorProps) {
     // props
     const [text, setText] = controller;
     useEffect(() => {
@@ -131,4 +131,6 @@ export const SpwEditor: FC<EditorProps> = ({
             </div>
         </ErrorBoundary>
     );
-};
+}
+
+export default SpwEditor;

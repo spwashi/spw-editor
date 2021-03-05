@@ -1,6 +1,6 @@
-import {SpwNode} from '@spwashi/language/grammars/spw/src/ast/node/spwNode';
-import {Runtime} from '@spwashi/language';
-import {SpwNodeKind} from '@spwashi/language/grammars/spw/src/ast/node';
+import {SpwNode} from '@spwashi/spw/ast/node/spwNode';
+import {Runtime} from '@spwashi/spw';
+import {SpwNodeKind} from '@spwashi/spw/ast/node';
 import {getAllNodesWithKey} from '../getAllNodesWithKey';
 import {NodeSelection} from '../nodeSelection';
 

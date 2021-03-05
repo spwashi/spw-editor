@@ -1,4 +1,4 @@
-import {Runtime} from '@spwashi/language';
+import {Runtime} from '@spwashi/spw';
 
 /**
  * Given a key, find all nodes that match

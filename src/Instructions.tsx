@@ -1,5 +1,5 @@
+import React from 'react';
 import {IConceptDescription} from './components/Input/ConceptChooser';
-import * as React from 'react';
 
 export function Instructions({selectedConcept}: { selectedConcept: IConceptDescription }) {
     const level                 = 0;

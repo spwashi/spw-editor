@@ -1,4 +1,4 @@
-import {Runtime} from '@spwashi/language';
+import {Runtime} from '@spwashi/spw';
 import {useCallback, useEffect, useRef} from 'react';
 import {IEditorMouseEvent} from '../../../types';
 import {findMatchingNodes} from '../../../util/spw/matching/findMatchingNodes';
