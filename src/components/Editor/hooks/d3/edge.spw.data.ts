@@ -1,12 +1,12 @@
 import {D3_Edge} from './types';
-import {NodeData, RawD3Node} from './node.spw.data';
+import {NodeDataContainer, RawD3Node} from './helpers/nodes/container';
 
 export class EdgeSpwData {
     _pendingLinks: (() => D3_Edge | false)[] = [];
 
-    private _nodeContainer: NodeData;
+    private _nodeContainer: NodeDataContainer;
 
-    constructor(nodeCollection: NodeData) {
+    constructor(nodeCollection: NodeDataContainer) {
         this._nodeContainer = nodeCollection;
     }
 
@@ -37,7 +37,8 @@ export class EdgeSpwData {
             const target = this._nodeContainer.map.get(link.target);
             if (!source || !target) {
                 const doThrow = false;
-                console.log('Could not create link', link, {source, target});
+                const doLog   = false;
+                doLog && console.log('Could not create link', link, {source, target});
                 if (doThrow) {
                     throw new Error('Could not create link');
                 }

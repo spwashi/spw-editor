@@ -1,7 +1,7 @@
 import {Datum} from '@spwashi/react-d3/data/types/datum';
 import {SpwNode} from '@spwashi/spw/ast/node/spwNode';
 
-export type ID3_Node = Datum & {
+export type D3Node = Datum & {
     x: number,
     y: number,
     r: number,
@@ -12,7 +12,10 @@ export type ID3_Node = Datum & {
         orderInParent?: number | undefined;
         [k: string]: any
     },
-    tmp: Partial<ID3_Node>;
+    debug: {
+        [k: string]: any
+    }
+    _internal: Partial<D3Node>;
     [k: string]: any
 };
-export type D3_Edge = { source: ID3_Node, target: ID3_Node };
+export type D3_Edge = { source: D3Node, target: D3Node };

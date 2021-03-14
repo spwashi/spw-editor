@@ -7,11 +7,11 @@ import {SpwNode} from '@spwashi/spw/ast/node/spwNode';
  * When the concept changes, parse the document and return the most current syntax tree
  *
  *
- * @param conceptContentController
+ * @param src
  * @param components
  * @param trigger
  */
-export function useParser(src: string, components: string[], trigger?: any[]): {
+export function useParser(src: string | null, components: string[], trigger?: any[]): {
     runtime?: Runtime;
     tree: SpwNode | SpwNode[];
     ast: SpwNode | SpwNode[];
@@ -24,35 +24,33 @@ export function useParser(src: string, components: string[], trigger?: any[]): {
             runAsync()
                 .then(
                     (ret) => {
+                        if (!ret) return;
                         setAst(ret.ast);
                         setTree(ret.tree);
                         setRuntime(ret.runtime);
-                        // console.log('updated parse tree', {input: src})
                     },
                 );
 
             async function runAsync() {
                 if (!src) return {};
-                const _runtime           = initializeRuntime();
-                const conceptDescription = {components, body: `${src}`};
+                const _runtime    = initializeRuntime();
+                const description = {components, body: `${src}`};
 
-                // try {
-                    const _ast =
-                              await loadConcept(
-                                  conceptDescription,
-                                  _runtime,
-                              ) as unknown as SpwNode | SpwNode[];
+                try {
+                    const _ast = await loadConcept(
+                        description,
+                        _runtime,
+                    ) as unknown as SpwNode | SpwNode[];
 
-console.log(_ast)
                     return {
                         ast:     _ast,
                         runtime: _runtime,
                         tree:    JSON.parse(JSON.stringify(_ast, (k, v) => v instanceof Set ? Array.from(v) : v)),
                     }
-                // } catch (e) {
-                //     console.log(`%c ${e.message}`, 'style: red');
-                //     return {}
-                // }
+                } catch (e) {
+                    console.log(`%c ${e.message}`, 'style: red');
+                    return {}
+                }
             }
         },
         trigger ?? [src],

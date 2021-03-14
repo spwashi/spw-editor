@@ -1,6 +1,11 @@
 import {SpwNode} from '@spwashi/spw/ast/node/spwNode';
-import {ID3_Node} from '../../../../types';
+import {D3Node} from '../../../../types';
 
-export interface RuleFn<T> {
-    (node: SpwNode, d: ID3_Node): T
+export interface D3NodeAttrCalculator<T> {
+    (node: SpwNode, d: Readonly<D3Node>): T
 }
+
+export interface D3NodeAttrMutator<T> {
+    (node: SpwNode, d: D3Node): T
+}
+

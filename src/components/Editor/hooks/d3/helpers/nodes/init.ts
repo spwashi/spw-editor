@@ -1,50 +1,47 @@
-import {SpwNode} from '@spwashi/spw/ast/node/spwNode';
-import {NodeData} from '../../node.spw.data';
-import {ID3_Node} from '../../types';
-import {isValidUrl} from './util';
+import {NodeDataContainer} from './container';
 import {
+    getNodeMutator,
     r_colorConstraint,
     r_fxConstraint,
     r_fyConstraint,
     r_rConstraint,
     r_titleConstraint,
-    r_xConstraint,
-    r_yConstraint,
 } from './rules';
-import {RuleFn} from './rules/types/ruleFn';
-
-function cb_click() {
-    return (node: SpwNode, d: ID3_Node) => {
-        if (isValidUrl(node?.key)) {
-            window.open(node?.key);
-        }
-        console.log('---');
-        console.log(d.spw);
-        console.log(node, d);
-    };
-}
+import {D3NodeAttrCalculator} from './rules/types/ruleFn';
+import {getClickCallback} from './behaviors/click';
+import {SpwNode} from '@spwashi/spw/ast/node/spwNode';
+import {D3Node} from '../../types';
 
 
-export type CallbackObj = { [index: string]: RuleFn<unknown> };
+export type CallbackObj = { [index: string]: D3NodeAttrCalculator<unknown> };
 
-export function initCallbacks( nodeCollection: NodeData): CallbackObj {
-    const click     = cb_click()
+
+let onClick = getClickCallback();
+export function initCallbacks(nodeCollection: NodeDataContainer): CallbackObj {
     const color     = r_colorConstraint();
     const title     = r_titleConstraint();
     const r         = r_rConstraint();
     const fy        = r_fyConstraint(nodeCollection);
     const fx        = r_fxConstraint(nodeCollection);
-    const smallestX = r_xConstraint(nodeCollection)
-    const smallestY = r_yConstraint(nodeCollection);
+    const smallestX = getNodeMutator(nodeCollection)
 
     return {
         r,
         fy,
         fx,
         color,
-        click,
+        click: (e: SpwNode, d: D3Node) => onClick(e, d),
         title,
         smallestX,
-        smallestY,
     };
+}
+
+if (module.hot) {
+    module.hot.accept(
+        './behaviors/click.ts',
+        () => {
+            const {getClickCallback} = require('./behaviors/click');
+            onClick                  = getClickCallback();
+        },
+    )
 }

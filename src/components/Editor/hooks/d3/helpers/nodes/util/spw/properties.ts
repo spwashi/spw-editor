@@ -18,11 +18,11 @@ export default function getGeneration(spwNode: SpwNode): number {
     }
 }
 
-export function getOrderInParent(parent: SpwBlockNode | SpwPhraseNode | undefined, node: SpwNode) {
+export function getOrderInParent(parent: SpwNode & { body: Iterable<SpwNode> } , node: SpwNode) {
     let orderInParent = 0;
     let firstNodeInBlock;
-    const isBlockNode = !!parent?.kind && ['domain', 'essence', 'concept'].includes(parent.kind);
-    for (let seqNode of parent?.body || []) {
+    const isBlockNode = !!parent.kind && ['domain', 'essence', 'concept'].includes(parent.kind);
+    for (let seqNode of parent.body || []) {
         if (isBlockNode && !firstNodeInBlock) firstNodeInBlock = seqNode;
         if (seqNode === node) { break; }
         orderInParent++;

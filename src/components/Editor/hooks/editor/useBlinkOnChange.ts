@@ -6,10 +6,10 @@ import {useDidMountEffect} from '../../../../hooks/useDidMountEffect';
  *
  * Does not run on mount.
  *
- * @param token
+ * @param deps
  * @param timeoutDuration
  */
-export function useBlinkOnChange(token: string | null, timeoutDuration = 100) {
+export function useBlinkOnChange(deps: any[], timeoutDuration = 100) {
     // blink
     const [changing, setChanging] = useState(false);
     useDidMountEffect(
@@ -27,7 +27,7 @@ export function useBlinkOnChange(token: string | null, timeoutDuration = 100) {
                 setChanging(false);
             }
         },
-        [token],
+        deps,
     )
     return changing;
 }

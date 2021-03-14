@@ -12,11 +12,12 @@ const mode    = modeOptions.development;
 const isProd  = mode === 'production';
 
 module.exports = {
-    entry:   './src/App.tsx',
+    entry:   ['react-hot-loader/patch', './src/index.tsx'],
     mode:    mode,
     devtool: !isProd ? 'inline-source-map' : undefined,
     devServer:
              {
+                 hot:                true,
                  contentBase:        './out',
                  port:               6006,
                  historyApiFallback: true,
@@ -57,8 +58,9 @@ module.exports = {
                  },
                  alias:
                              {
-                                 process: "process/browser",
-                                 react:   path.resolve('./node_modules/react')
+                                 'react-dom': '@hot-loader/react-dom',
+                                 process:     "process/browser",
+                                 react:       path.resolve('./node_modules/react')
                              },
              },
     output:
@@ -71,6 +73,7 @@ module.exports = {
              [
                  new HtmlWebpackPlugin({template: path.resolve(__dirname, 'src/assets/index.html')}),
                  new webpack.ProvidePlugin({process: 'process/browser',}),
+                 new webpack.HotModuleReplacementPlugin(),
                  isProd && new BundleAnalyzerPlugin(),
                  isProd && new CleanWebpackPlugin(),
              ]

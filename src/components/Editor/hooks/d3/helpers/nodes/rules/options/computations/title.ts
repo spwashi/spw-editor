@@ -1,9 +1,9 @@
 import {SpwNode} from '@spwashi/spw/ast/node/spwNode';
 import {isValidUrl} from '../../../util';
 import {SpwBlockNode} from '@spwashi/spw/ast/node/nodeTypes/helper/block';
-import {RuleFn} from '../../types/ruleFn';
+import {D3NodeAttrCalculator} from '../../types/ruleFn';
 
-export function r_titleConstraint(): RuleFn<undefined | string> {
+export function r_titleConstraint(): D3NodeAttrCalculator<undefined | string> {
     return (node: SpwNode) => {
         const kind   = node.kind;
         const parent = node.getProp('parent');

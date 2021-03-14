@@ -15,6 +15,5 @@ export interface EditorSaveAttempt {
     }
 }
 
-export interface EditorSaveResponse {
-    saved: boolean;
-}
+export type EditorSaveResponse =
+    undefined | { saved: boolean; }

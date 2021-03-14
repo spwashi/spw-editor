@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import React, {useMemo} from 'react';
-import {D3DataCollection} from './hooks/d3/data';
+import {D3DataCollection} from '../hooks/d3/data';
 import {Viz, VizInputs} from '@spwashi/react-d3';
 
 const VizWrapper = styled.div`

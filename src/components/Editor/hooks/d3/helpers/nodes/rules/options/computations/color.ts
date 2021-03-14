@@ -1,8 +1,8 @@
-import {RawD3Node} from '../../../../../node.spw.data';
+import {RawD3Node} from '../../../container';
 import {SpwNodeKind} from '@spwashi/spw/ast/node';
-import {RuleFn} from '../../types/ruleFn';
+import {D3NodeAttrCalculator} from '../../types/ruleFn';
 
-export function r_colorConstraint(): RuleFn<string> {
+export function r_colorConstraint(): D3NodeAttrCalculator<string> {
     return (node: RawD3Node) => {
         switch (node.kind as SpwNodeKind) {
             case 'phrase':

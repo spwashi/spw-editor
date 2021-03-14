@@ -1,18 +1,13 @@
-import {NodeData} from '../../../../../node.spw.data';
+import {NodeDataContainer} from '../../../container';
 import {SpwNode} from '@spwashi/spw/ast/node/spwNode';
-import {ID3_Node} from '../../../../../types';
-import {getNodeRelatives} from '../../../util/spw/relatives';
-import {RuleFn} from '../../types/ruleFn';
+import {D3Node} from '../../../../../types';
+import {getNodeInfo} from '../../../util/spw/relatives';
+import {D3NodeAttrCalculator} from '../../types/ruleFn';
 
-export function r_fxConstraint(nodeCollection: NodeData): RuleFn<number | undefined> {
-    return (node: SpwNode, d: ID3_Node) => {
-        const {
-                  generation,
-                  firstNodeInBlock,
-                  firstNodeInStrand,
-                  orderInParent,
-                  effectiveParent,
-              } = getNodeRelatives(node);
+export function r_fxConstraint(nodeCollection: NodeDataContainer): D3NodeAttrCalculator<number | undefined> {
+    let _topOrderInParent = 0;
+    return (node: SpwNode, d: D3Node) => {
+        const info = getNodeInfo(node);
 
         const TT_nodeRules =
                   {
@@ -22,7 +17,9 @@ export function r_fxConstraint(nodeCollection: NodeData): RuleFn<number | undefi
                       NodesMatchFirstInBlock:         false,
                   }
 
-        if (!generation) return 0;
+        if (!info.generation) {
+            return;
+        }
 
         if (
             TT_nodeRules.EssencesInStrandsMatchPrev &&
@@ -52,20 +49,20 @@ export function r_fxConstraint(nodeCollection: NodeData): RuleFn<number | undefi
 
         if (
             TT_nodeRules.FirstNodeInStrandMatchesParent &&
-            (firstNodeInStrand === node)
+            (info.strand.firstNode === node)
         ) {
-            const parentD = nodeCollection.map.get(effectiveParent);
+            const parentD = nodeCollection.map.get(info.effectiveParent);
             return parentD?.x ? parentD?.x + (parentD.r + d.r)
                               : undefined;
         }
 
         if (
             TT_nodeRules.NodesMatchFirstInBlock &&
-            firstNodeInBlock &&
-            firstNodeInBlock !== node &&
-            orderInParent
+            info.block.firstNode &&
+            info.block.firstNode !== node &&
+            info.block.orderInParent
         ) {
-            const firstD = nodeCollection.map.get(firstNodeInBlock);
+            const firstD = nodeCollection.map.get(info.block.firstNode);
             if (firstD?.x) {
                 return firstD.x
             }

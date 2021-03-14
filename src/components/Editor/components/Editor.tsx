@@ -1,9 +1,9 @@
-import React, {FC, MutableRefObject, useEffect, useMemo, useRef, useState} from 'react';
+import React, {MutableRefObject, useEffect, useMemo, useRef, useState} from 'react';
 import {default as MonacoEditor} from '@monaco-editor/react';
-import {initSpw} from './util/initSpw';
-import {IEditorPreferences, initEditorConfig} from './util/initEditorConfig';
-import {useVimMode} from './hooks/editor/useVimMode';
-import {focusConceptChooser} from '../Input/ConceptChooser';
+import {initSpw} from '../util/initSpw';
+import {IEditorPreferences, initEditorConfig} from '../util/initEditorConfig';
+import {useVimMode} from '../hooks/editor/useVimMode';
+import {focusConceptChooser} from '../../Input/ConceptChooser';
 import {editor, editor as nsEditor} from 'monaco-editor/esm/vs/editor/editor.api';
 
 type IEditorMouseEvent = editor.IEditorMouseEvent;
@@ -12,6 +12,7 @@ type Editor = nsEditor.IStandaloneCodeEditor;
 export type EditorContentController = [string, (s: string) => any];
 export type EditorProps =
     {
+        onChange?: (text: string) => void | unknown;
         /**
          * Whether to enable vim mode
          */
@@ -30,7 +31,7 @@ export type EditorProps =
     } &
     IEditorPreferences;
 
-function VimBar({editor}: { editor: Editor }) {
+function VimBar({editor}: { editor?: Editor | null }) {
     const vimBar = useRef() as MutableRefObject<HTMLDivElement>;
     useVimMode(editor, vimBar.current);
     return (
@@ -66,27 +67,30 @@ class ErrorBoundary extends React.Component {
 }
 
 
+function useSetTextIfInvalid(text: string | undefined, setText: (c: string) => void) {
+    useEffect(() => { if (typeof text !== 'string') {setText('{{_error INPUT IS NOT TEXT error_}}')}},
+              [text])
+}
+function useEditorOptions({fontSize, size}: IEditorPreferences, text: string) {
+    const {w, h, options} = useMemo(() => initEditorConfig({fontSize, size}, text),
+                                    [fontSize, size, text])
+    return {w, h, options};
+}
 /**
  * Editor for the Spw Programming Language.
  *
  */
 export function SpwEditor({
-                              fontSize,
-                              size,
-                              content = '',
-                              controller: [...controller] = [content, () => {}],
-                              vim = false,
-                              events: {
-                                          onMouseDown,
-                                      }                   = {},
+                              fontSize, size, vim,
+                              content:  content = '',
+                              onChange: setContent = () => {},
+                              events:   {
+                                            onMouseDown,
+                                        } = {},
                           }: EditorProps) {
     // props
-    const [text, setText] = controller;
-    useEffect(() => {
-        if (typeof text !== 'string') {setText('error')}
-    }, [text])
-    const {w, h, options} = useMemo(() => initEditorConfig({fontSize, size}, text),
-                                    [fontSize, text, size])
+    useSetTextIfInvalid(content, setContent);
+    const {w, h, options} = useEditorOptions({fontSize, size}, content);
     // init
     useEffect(() => { initSpw() }, [])
     const [editor, setEditor] = useState<Editor | null>(null);
@@ -114,20 +118,21 @@ export function SpwEditor({
     // vim
 
 
+    const onValueChange = (val: string | unknown) => {
+        if (typeof val !== 'string') return;
+        setContent(val || '');
+    };
+    console.log({content, editor});
     return (
         <ErrorBoundary>
             <div style={{display: 'block', width: '100%'}}>
-                <MonacoEditor
-                    onChange={(val, _ev) => {
-                        if (typeof val !== 'string') return;
-                        setText(val || '');
-                    }}
-                    onMount={setEditor}
-                    language="spw"
-                    theme="spw-dark"
-                    value={text || ''}
-                    height={h} width={w} options={options}/>
-                {!editor || !vim ? null : <VimBar editor={editor}/>}
+                <MonacoEditor onChange={onValueChange}
+                              onMount={setEditor}
+                              language="spw"
+                              theme="spw-dark"
+                              value={content || ''}
+                              height={h} width={w} options={options}/>
+                {vim && <VimBar editor={editor}/>}
             </div>
         </ErrorBoundary>
     );

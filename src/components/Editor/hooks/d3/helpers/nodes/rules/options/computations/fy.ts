@@ -1,11 +1,11 @@
-import {NodeData} from '../../../../../node.spw.data';
+import {NodeDataContainer} from '../../../container';
 import {SpwNode} from '@spwashi/spw/ast/node/spwNode';
-import {ID3_Node} from '../../../../../types';
-import {getNodeRelatives} from '../../../util/spw/relatives';
+import {D3Node} from '../../../../../types';
+import {getNodeInfo} from '../../../util/spw/relatives';
 
-export function r_fyConstraint(nodeCollection: NodeData) {
-    return (node: SpwNode, d: ID3_Node) => {
-        const info = getNodeRelatives(node);
+export function r_fyConstraint(nodeCollection: NodeDataContainer) {
+    return (node: SpwNode, d: D3Node) => {
+        const info = getNodeInfo(node);
 
         if (!info.generation) return 0;
 
@@ -27,10 +27,10 @@ export function r_fyConstraint(nodeCollection: NodeData) {
         }
 
 
-        if (!info.firstNodeInStrand || (info.firstNodeInStrand === node)) return undefined;
+        if (!info.strand.firstNode || (info.strand.firstNode === node)) return undefined;
 
-        if (info.strandDistance) {
-            return nodeCollection.map.get(info.firstNodeInStrand)?.y;
+        if (info.strand.distanceFromHead) {
+            return nodeCollection.map.get(info.strand.firstNode)?.y;
         }
 
         return undefined;

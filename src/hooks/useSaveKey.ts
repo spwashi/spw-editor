@@ -17,6 +17,7 @@ export function useSaveKey(): number | null {
     useEffect(
         () => {
             if (!listenersAdded) {
+                console.log('ADDING LISTENER')
                 window.addEventListener('keydown', updateSaveTs)
                 setListenersAdded(true);
             }

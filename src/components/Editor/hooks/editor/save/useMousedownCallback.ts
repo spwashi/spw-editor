@@ -4,7 +4,7 @@ import {IEditorMouseEvent} from '../../../types';
 import {findMatchingNodes} from '../../../util/spw/matching/findMatchingNodes';
 
 /**
- * Creates a callback for the mousedown event when
+ * Creates a modifyX for the mousedown event when
  * a user clicks somewhere inside the editor.
  *
  * @param runtime

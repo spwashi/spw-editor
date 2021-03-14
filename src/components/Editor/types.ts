@@ -1,22 +1,15 @@
 import {editor} from 'monaco-editor';
 import {IConceptDescription} from '../Input/ConceptChooser';
+import {EditorSaveResponse} from './hooks/editor/save/types';
 
 export type IEditorMouseEvent = editor.IEditorMouseEvent;
 
-export type EditorMode = 'editor' | 'd3' | 'tree';
+export type EditorMode = 'editor' | 'spw' | 'd3' | 'tree';
 
 export interface StandardEditorParams {
-    defaultValue: string;
-    conceptIdCount: number;
-    defaultComponents: string[];
-    canOverrideDefaults: boolean;
+    content: string | null;
+    save: (str: string) => Promise<EditorSaveResponse>
     fontSize: number;
     mode?: EditorMode;
-
-    conceptChoiceController: [IConceptDescription, (s: IConceptDescription) => void];
-    conceptContentController: ConceptContentController;
+    srcSelection: IConceptDescription;
 }
-
-export type EditorDisplayOption = 'editor' | 'tree' | 'd3';
-
-export type ConceptContentController = [string, (s: string) => void];
