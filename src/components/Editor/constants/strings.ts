@@ -1,2 +1,0 @@
-export const SPW_STRING__initial_value =
-                 [`{_boon\n\n\tbranman\n\t\t=>\n\t\t\tglotto[\n\t\t\t\tweet,\n\t\t\t\tsloonm,\n\t\t\t\tgruc,\n\t\t\t]\n\t\t=> \n\t\t\t<\n\t\t\t\tboon\n\t\t\t>\n\nmanna_}`].join('\n');

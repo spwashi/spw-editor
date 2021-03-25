@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react';
-import {initializeRuntime, loadConcept} from '../../util/spw/parser/loadConcept';
+import {initializeRuntime, loadConcept} from '../../util/spw/runtime/loadConcept';
 import {Runtime} from '@spwashi/spw';
 import {SpwNode} from '@spwashi/spw/ast/node/spwNode';
 

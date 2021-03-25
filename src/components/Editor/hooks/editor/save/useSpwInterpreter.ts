@@ -1,4 +1,4 @@
-import {IConceptDescription} from '../../../../Input/ConceptChooser';
+import {IConceptDescription} from '../../../../ConceptSelector/ConceptSelector';
 import {useParser} from '../../spw/useParser';
 import {useSpwD3} from '../../d3/useSpwD3';
 

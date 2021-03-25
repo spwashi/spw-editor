@@ -25,7 +25,6 @@
     "target": "ES6"
   },
   "include": [
-    "src",
-    "types"
+    "src"
   ]
 }

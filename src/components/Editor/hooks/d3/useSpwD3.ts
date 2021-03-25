@@ -20,7 +20,7 @@ export function useSpwD3(runtime: Runtime | undefined): D3DataCollection | undef
             const _data = new D3DataCollection();
 
             const {anchors, strands} = categorizeNodes(all, _data);
-            console.log({anchors, strands, current: _data});
+            // console.log({anchors, strands, current: _data});
 
             setData(_data);
         },

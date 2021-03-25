@@ -1,13 +1,13 @@
 import {editor as Editor} from 'monaco-editor/esm/vs/editor/editor.api';
-import {tokenizer} from './spw/tokenizer';
-import {rules} from './spw/tokenizer-theme';
+import {tokenizer} from './tokenizer/tokenizer';
+import {rules} from './tokenizer/tokenizer-theme';
 import {editor, languages} from 'monaco-editor';
 
-export function initSpw() {
+export function initSpwTheme() {
     const language                               = {tokenizer};
     const themeData: Editor.IStandaloneThemeData = {
         colors:  {
-            'editor.background': '#000000',
+            'editor.background': '#282C34',
         },
         inherit: false,
         base:    'vs-dark',

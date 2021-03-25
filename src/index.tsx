@@ -2,18 +2,16 @@ import App from './App';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-export {SpwEditor} from './components/Editor/components/Editor'
-console.log('here')
+export {SpwEditor} from './components/Editor'
+
 render(App);
 
 if (module.hot) {
-    module.hot.accept(
-        './App',
-        () => {
-            const NewApp = require('./App').default;
-            render(NewApp)
-        },
-    )
+    module.hot.accept('./App',
+                      () => {
+                          const NewApp = require('./App').default;
+                          render(NewApp)
+                      })
 }
 
 function render(Component = App) {

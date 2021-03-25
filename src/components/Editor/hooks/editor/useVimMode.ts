@@ -7,7 +7,6 @@ import {editor} from 'monaco-editor/esm/vs/editor/editor.api';
 export function useVimMode(editor?: editor.IStandaloneCodeEditor | null, el?: HTMLElement | undefined) {
     useEffect(
         () => {
-            console.log(editor)
             let vimMode: any;
             if (el && editor) {
                 vimMode = initVimMode(editor, el);

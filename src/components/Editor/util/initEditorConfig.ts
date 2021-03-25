@@ -17,10 +17,10 @@ function countNewlines(content: string) {
     return (content || '').split('\n').length || 0;
 }
 
-export function initEditorConfig(preferences: IEditorPreferences, content: string) {
+export function initEditorConfig(preferences: IEditorPreferences, content: string | undefined) {
     const {size = {height: 500}, fontSize = 17} = preferences;
     const {width, fullScreen, height}           = size || {height: '100%', width: '100%'}
-    const newlineCount                          = countNewlines(content) + 10;
+    const newlineCount                          = content ? countNewlines(content) + 10 : 20;
 
     const w = fullScreen ? '100% ' : (/^\d+$/.test(`${width}`) ? width : `${width}px`);
     const h = fullScreen ? '100vh' : (height || Math.min(newlineCount * (fontSize + 7)));
@@ -37,6 +37,7 @@ export function initEditorConfig(preferences: IEditorPreferences, content: strin
                   quickSuggestionsDelay: 300,
                   wordWrap:              'off',
                   wordWrapColumn:        400,
+                  lineNumbersMinChars:   3,
               };
     return {w, h, options};
 }

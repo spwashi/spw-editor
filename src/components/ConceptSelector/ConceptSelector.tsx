@@ -1,5 +1,5 @@
 import React, {FC, useEffect, useMemo} from 'react';
-import {CommittedInput, InputCommitType} from './CommittedInput';
+import {Input, InputCommitType} from './components/Input';
 import {useLocalStorage} from '../../hooks/useLocalStorage';
 
 import {createHash} from 'crypto';
@@ -74,7 +74,7 @@ let alertChanged                                     = ({id}: IConceptDescriptio
  * @param overridableDefaults
  * @constructor
  */
-export const ConceptChooser: FC<ConceptChooserProps> =
+export const ConceptSelector: FC<ConceptChooserProps> =
     ({
          count = 2,
          commitTrigger = 'blur',
@@ -157,12 +157,12 @@ export const ConceptChooser: FC<ConceptChooserProps> =
                         states.map(
                             ([state, setState], i) =>
                                 (
-                                    <CommittedInput key={i}
-                                                    type="text"
-                                                    name={`${i + 1}`}
-                                                    id={getConceptSelectionIndexElementID(i)}
-                                                    disabled={!!(defaultComponents[i] && !allowOverriddenDefaults)}
-                                                    value={
+                                    <Input key={i}
+                                           type="text"
+                                           name={`${i + 1}`}
+                                           id={getConceptSelectionIndexElementID(i)}
+                                           disabled={!!(defaultComponents[i] && !allowOverriddenDefaults)}
+                                           value={
                                                         (
                                                             (allowOverriddenDefaults && defaultComponents[i] && !state)
                                                             ?? state
@@ -170,13 +170,13 @@ export const ConceptChooser: FC<ConceptChooserProps> =
                                                         || state
                                                         || ''
                                                     }
-                                                    onValueChange={
+                                           onValueChange={
                                                         (e: string) =>
                                                             (!allowOverriddenDefaults ?? false)
                                                             ? (!defaultComponents[i] && setState(e))
                                                             : setState(e)
                                                     }
-                                                    commitTrigger={commitTrigger}/>
+                                           commitTrigger={commitTrigger}/>
                                 ),
                         )
                     }

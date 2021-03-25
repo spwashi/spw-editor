@@ -1,37 +1,21 @@
 // Hook
-import React from 'react';
-import {useCallback, useEffect, useState} from 'react';
-import {Button, Input, InputProps, styled} from '@material-ui/core';
+import React, {useCallback, useEffect, useState} from 'react';
+import {Button, Input as MaterialInput, InputProps, styled} from '@material-ui/core';
 
 export type InputCommitType = 'button' | 'blur';
 
 export const StyledInput  =
-                 styled(Input)(
-                     {
-                         borderBottom: 'thin solid red',
-                         color:        'white',
-                         marginRight:  '1rem',
-                     },
-                 );
+                 styled(MaterialInput)({});
 export const StyledButton =
-                 styled(Button)(
-                     {
-                         borderBottom:  'thin solid red',
-                         color:         'white',
-                         fontSize:      '10px',
-                         marginRight:   '.5rem',
-                         textTransform: 'none',
-                         padding:       '.25rem',
-                     },
-                 );
+                 styled(Button)({});
 
-export function CommittedInput({
-                                   value,
-                                   name,
-                                   onValueChange,
-                                   commitTrigger,
-                                   ...args
-                               }: InputProps & { onValueChange: (v: any) => unknown, commitTrigger: InputCommitType }) {
+export function Input({
+                          value,
+                          name,
+                          onValueChange,
+                          commitTrigger,
+                          ...args
+                      }: InputProps & { onValueChange: (v: any) => unknown, commitTrigger: InputCommitType }) {
     const [tentativeValue, setTentativeValue] = useState(value);
 
     const commit = useCallback(() => onValueChange(tentativeValue),

@@ -1,67 +1,54 @@
 {
+  "name": "@spwashi/spw-editor",
   "version": "0.1.1",
+  "repository": {
+    "url": "https://github.com/spwashi/spw-editor"
+  },
   "license": "MIT",
-  "main": "dist/spw-editor.cjs.production.min.js",
-  "typings": "dist/index.d.ts",
+  "author": "Sam Washington",
   "files": [
     "dist",
     "src"
   ],
-  "engines": {
-    "node": ">=10"
-  },
   "scripts": {
-    "_build": "tsdx build",
-    "_prepare": "tsdx build",
-    "start": "tsdx watch",
     "build": "webpack",
-    "dev": "webpack serve --port 3005",
-    "test": "tsdx test --passWithNoTests",
-    "lint": "tsdx lint",
-    "size": "size-limit",
-    "analyze": "size-limit --why",
-    "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "preserve": "webpack",
+    "serve": "serve -s out/",
+    "dev": "webpack serve --port 3005"
   },
-  "peerDependencies": {
-    "react": ">=17"
+  "dependencies": {
+    "@hot-loader/react-dom": "^17.0.1",
+    "@material-ui/core": "^4.11.0",
+    "@monaco-editor/react": "^4.0.9",
+    "@spwashi/language": "^1.3.0",
+    "@spwashi/react-d3": "^0.2.9",
+    "@spwashi/spw": "0.1.0",
+    "@types/d3": "^6.3.0",
+    "@types/dedent": "^0.7.0",
+    "@types/react-router": "^5.1.12",
+    "@types/react-router-dom": "^5.1.7",
+    "@types/styled-components": "^5.1.7",
+    "bootstrap": "^4.5.3",
+    "buffer": "^6.0.3",
+    "monaco-editor": "^0.21.2",
+    "monaco-vim": "^0.1.9",
+    "react": "^17.0.1",
+    "react-bootstrap": "^1.4.0",
+    "react-dom": "^17.0.1",
+    "react-error-boundary": "^3.1.1",
+    "react-hot-loader": "^4.13.0",
+    "react-is": "^17.0.1",
+    "react-json-view": "^1.20.5",
+    "react-router-dom": "^5.2.0",
+    "reset-css": "^5.0.1",
+    "stream-browserify": "^3.0.0",
+    "styled-components": "^5.2.1",
+    "web-vitals": "^1.1.0"
   },
-  "husky": {
-    "hooks": {
-    }
-  },
-  "prettier": {
-    "printWidth": 80,
-    "semi": true,
-    "singleQuote": true,
-    "trailingComma": "es5"
-  },
-  "name": "spw-editor",
-  "author": "Sam Washington",
-  "module": "dist/spw-editor.esm.js",
-  "size-limit": [
-    {
-      "path": "dist/spw-editor.cjs.production.min.js",
-      "limit": "10 KB"
-    },
-    {
-      "path": "dist/spw-editor.esm.js",
-      "limit": "10 KB"
-    }
-  ],
   "devDependencies": {
     "@babel/core": "^7.12.10",
-    "@rollup/plugin-commonjs": "^17.0.0",
-    "@rollup/plugin-node-resolve": "^11.0.1",
-    "@size-limit/preset-small-lib": "^4.6.0",
-    "@storybook/addon-essentials": "^6.1.17",
-    "@storybook/addon-info": "^5.3.21",
-    "@storybook/addon-links": "^6.1.17",
-    "@storybook/addons": "^6.1.17",
-    "@storybook/preset-scss": "^1.0.3",
-    "@storybook/react": "^6.1.17",
-    "@types/react": "^16.9.50",
-    "@types/react-dom": "^16.9.8",
+    "@types/react": "^17.0.1",
+    "@types/react-dom": "^17.0.1",
     "@types/webpack-env": "^1.16.0",
     "babel-loader": "^8.1.0",
     "babel-plugin-annotate-pure-calls": "^0.4.0",
@@ -73,48 +60,19 @@
     "husky": "^4.3.0",
     "node-sass": "^4.14.1",
     "process": "^0.11.10",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1",
-    "react-is": "^17.0.1",
-    "rollup-plugin-internal": "^1.0.4",
-    "rollup-plugin-postcss": "^4.0.0",
-    "rollup-plugin-scss": "^2.6.1",
     "sass-loader": "^10.1.0",
-    "size-limit": "^4.6.0",
     "style-loader": "^2.0.0",
     "ts-loader": "^8.0.17",
-    "tsdx": "^0.14.0",
     "tslib": "^2.0.1",
     "ttf-loader": "^1.0.2",
     "typescript": "^4.2.3",
     "webpack": "^5.24.3",
     "webpack-bundle-analyzer": "^4.4.0",
     "webpack-cli": "^4.5.0",
-    "webpack-dev-server": "^3.11.2"
+    "webpack-dev-server": "^3.11.2",
+    "serve-static": "^1.14.1"
   },
-  "dependencies": {
-    "@hot-loader/react-dom": "^17.0.1",
-    "@material-ui/core": "^4.11.0",
-    "@monaco-editor/react": "^4.0.9",
-    "@spwashi/language": "^1.3.0",
-    "@spwashi/react-d3": "^0.2.8",
-    "@spwashi/spw": "^0.1.0",
-    "@types/d3": "^6.3.0",
-    "@types/dedent": "^0.7.0",
-    "@types/react-router": "^5.1.12",
-    "@types/react-router-dom": "^5.1.7",
-    "@types/styled-components": "^5.1.7",
-    "bootstrap": "^4.5.3",
-    "monaco-editor": "^0.21.2",
-    "monaco-vim": "^0.1.9",
-    "react-bootstrap": "^1.4.0",
-    "react-error-boundary": "^3.1.1",
-    "react-hot-loader": "^4.13.0",
-    "react-json-view": "^1.20.5",
-    "react-router-dom": "^5.2.0",
-    "reset-css": "^5.0.1",
-    "stream-browserify": "^3.0.0",
-    "styled-components": "^5.2.1",
-    "web-vitals": "^1.1.0"
+  "engines": {
+    "node": ">=10"
   }
 }

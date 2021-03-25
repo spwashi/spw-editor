@@ -1,7 +1,6 @@
 import {useSaveKey} from '../../../../../hooks/useSaveKey';
 import {useCallback, useReducer} from 'react';
 import {useDidMountEffect} from '../../../../../hooks/useDidMountEffect';
-import {EditorSaveResponse} from './types';
 
 
 type SaveAttempt = {};
@@ -14,7 +13,6 @@ type State = {
 type Action =
     { type: 'begin-save' }
     | { type: 'complete-save' }
-    | { type: 'fail-save' }
     ;
 
 /**
@@ -60,17 +58,11 @@ function reducer(state: State, action: Action) {
 
 const sleep = (time: number) => new Promise((res) => setTimeout(res, time))
 
-export function useControlledEditorSave(content: string | null, save: (str: string) => Promise<EditorSaveResponse>) {
+export function useControlledEditorSave(content: string | null, save: (str: string) => void) {
     const savekeyLastPressed = useSaveKey();
-    '// -- reducer --';
-    const [state, dispatch] = useReducer(reducer, initSaveReducerState())
-
-    '// -- emitters --';
-    const emitCompleteEvent = useCallback(() => dispatch({type: 'complete-save'}), [dispatch]);
-    const emitFailEvent     = useCallback(() => dispatch({type: 'fail-save'}), [dispatch]);
-
-
-    let initiateSave = () => content ? save(content) : {saved: true};
+    const [state, dispatch]  = useReducer(reducer, initSaveReducerState())
+    const emitCompleteEvent  = useCallback(() => dispatch({type: 'complete-save'}), [dispatch]);
+    const initiateSave       = () => content ? save(content) : null;
 
     // effects
     useDidMountEffect(() => { dispatch({type: 'begin-save'}) }, [savekeyLastPressed]);

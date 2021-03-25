@@ -1,31 +1,27 @@
 import React, {useEffect, useState} from 'react';
-import {StandardEditorParams} from '../../types';
-import {useControlledEditorSave} from '../../hooks/editor/save/useControlledEditorSave';
-import {useSpwInterpreter} from '../../hooks/editor/save/useSpwInterpreter';
-import {useMousedownCallback} from '../../hooks/editor/save/useMousedownCallback';
-import {Body} from './Body';
+import {useControlledEditorSave} from '../Editor/hooks/editor/save/useControlledEditorSave';
+import {useSpwInterpreter} from '../Editor/hooks/editor/save/useSpwInterpreter';
+import {useMousedownCallback} from '../Editor/hooks/editor/save/useMousedownCallback';
+import Body from './components/Body';
 import {ErrorBoundary} from 'react-error-boundary';
-import {ErrorFallback} from '../../../util/ErrorFallback';
-import {Simulate} from 'react-dom/test-utils';
-
+import {ErrorFallback} from '../ErrorFallback';
+import {EditorMode, StandardEditorParams} from './types';
 
 /**
  * A text editor with externally defined state controllers
  * @param params
  * @constructor
  */
-export function ControlledEditor(params: StandardEditorParams) {
+export function SpwClient(params: StandardEditorParams & { mode: EditorMode }) {
     const {
-              fontSize,
               mode = 'spw',
+              fontSize,
               save,
               srcSelection,
               content: outerContent,
           }                                = params;
     const [innerContent, setEditorContent] = useState<string | null>(outerContent);
-    useEffect(() => {
-        setEditorContent(outerContent);
-    }, [outerContent])
+    useEffect(() => { setEditorContent(outerContent); }, [outerContent])
 
     const {currentSave} = useControlledEditorSave(innerContent, save);
     const spwParseDeps  = [currentSave, !!innerContent, srcSelection.id];
@@ -45,8 +41,7 @@ export function ControlledEditor(params: StandardEditorParams) {
             <div style={{height: '100%', display: 'flex', flexDirection: 'column', border: `thick solid ${color}`}}>
                 {
                     error ? JSON.stringify(error, null, 3)
-                          : <Body mode={mode}
-                                  d3={spw.d3} tree={spw.tree}
+                          : <Body d3={spw.d3} tree={spw.tree}
                                   editor={{
                                       fontSize,
                                       srcSelection,
@@ -59,5 +54,3 @@ export function ControlledEditor(params: StandardEditorParams) {
         </ErrorBoundary>
     );
 }
-
-export default ControlledEditor;

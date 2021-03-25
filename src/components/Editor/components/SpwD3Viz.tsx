@@ -1,10 +1,10 @@
 import styled from 'styled-components';
 import React, {useMemo} from 'react';
 import {D3DataCollection} from '../hooks/d3/data';
-import {Viz, VizInputs} from '@spwashi/react-d3';
+import {VizInputs} from '@spwashi/react-d3/components/VizInputs';
+import {Viz} from '@spwashi/react-d3/components/Viz';
 
 const VizWrapper = styled.div`
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
