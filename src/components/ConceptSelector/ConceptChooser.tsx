@@ -2,8 +2,6 @@ import React, {memo, useEffect, useMemo} from 'react';
 import {Input, InputCommitType} from './components/Input';
 import {useLocalStorage} from '../../hooks/useLocalStorage';
 
-import {createHash} from 'crypto';
-
 function getConceptSelectionIndexElementID(i: number) {
     return `ConceptSelectionControl--${i}`;
 }
@@ -130,7 +128,7 @@ export const ConceptChooser = memo<ConceptChooserProps>((props,
         () => {
             const conceptDescription: IConceptDescription =
                       {
-                          id:         createHash('md5').update(concept).digest('hex'),
+                          id:         concept,
                           seed:       concept,
                           components: conceptComponents,
                       };

@@ -34,7 +34,7 @@ function useFontSize() {
     return fontSize;
 }
 
-export function ClientRoute() {
+export function EditorClientRouteComponent() {
     const urlParams                   = useQuery();
     const defaultConcept              = urlParams.get('concept') ?? '';
     const mode                        = (urlParams.get('mode') ?? 'editor') as EditorMode;

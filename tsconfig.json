@@ -10,6 +10,7 @@
     "downlevelIteration": true,
     "declaration": true,
     "declarationDir": "./dist",
+    "outDir": "./dist",
     "sourceMap": true,
     "rootDir": "./src",
     "strict": true,

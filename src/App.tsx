@@ -5,8 +5,7 @@ import {ThemeProvider} from '@material-ui/core';
 import {hot} from 'react-hot-loader/root';
 import {PersistenceContextProvider} from './components/SpwClient/context/persistence/context';
 import {muiTheme} from './theme/mui';
-import {ClientRoute} from './routes/client/Client';
-
+import {EditorClientRouteComponent} from './routes/client/Client';
 
 export default hot(ConnectedApp);
 function ConnectedApp() {
@@ -15,7 +14,7 @@ function ConnectedApp() {
             <ThemeProvider theme={muiTheme}>
                 <PersistenceContextProvider>
                     <Switch>
-                        <Route path={'/:concepts*'} component={ClientRoute}/>
+                        <Route path={'/:concepts*'} component={EditorClientRouteComponent}/>
                     </Switch>
                 </PersistenceContextProvider>
             </ThemeProvider>

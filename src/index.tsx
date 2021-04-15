@@ -4,16 +4,7 @@ import ReactDOM from 'react-dom';
 
 export {SpwEditor} from './components/Editor'
 
-render(App);
-
-if (module.hot) {
-    module.hot.accept('./App',
-                      () => {
-                          const NewApp = require('./App').default;
-                          render(NewApp)
-                      })
-}
-
-function render(Component = App) {
-    ReactDOM.render(<Component/>, document.getElementById('root'));
+export function render(Component = App) {
+    const node = document.getElementById('spw-editor-demo-app-root');
+    node && ReactDOM.render(<Component/>, node);
 }
