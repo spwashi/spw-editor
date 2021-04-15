@@ -8,7 +8,6 @@ export const StyledInput  =
                  styled(MaterialInput)({});
 export const StyledButton =
                  styled(Button)({});
-
 export function Input({
                           value,
                           name,
@@ -29,30 +28,16 @@ export function Input({
         [value],
     )
     return (
-        <div className="ConfirmedInputWrapper"
-             style={
-                 {
-                     padding:        '5px',
-                     display:        'flex',
-                     justifyContent: 'center',
-                     alignItems:     'center',
-                     fontFamily:     'JetBrains Mono',
-                 }
-             }>
-            <label style={{
-                border:         'thin solid red',
-                color:          'white',
-                padding:        '3px',
-                width:          '7px',
-                height:         '7px',
-                borderRadius:   '100%',
-                display:        'inline-flex',
-                justifyContent: 'center',
-                alignItems:     'center',
-                fontSize:       '15px',
-                marginRight:    '15px',
-            }}
-                   htmlFor={name}>
+        <div
+            style={
+                {
+                    padding:        '5px',
+                    display:        'flex',
+                    justifyContent: 'center',
+                    alignItems:     'center',
+                }
+            }>
+            <label htmlFor={name} style={{color: 'transparent'}}>
                 <span style={{position: 'absolute'}}>{name}</span>
             </label>
             <StyledInput {...args}

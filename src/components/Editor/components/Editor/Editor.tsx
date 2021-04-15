@@ -1,10 +1,9 @@
-import React, {MutableRefObject, useEffect, useMemo, useRef, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {default as MonacoEditor} from '@monaco-editor/react';
 import {initSpwTheme} from '../../util/spw/monaco/initSpwTheme';
 import {IEditorPreferences, initEditorConfig} from '../../util/initEditorConfig';
-import {useVimMode} from '../../hooks/editor/useVimMode';
-import {focusConceptChooser} from '../../../ConceptSelector/ConceptSelector';
-import {editor, editor as nsEditor} from 'monaco-editor/esm/vs/editor/editor.api';
+import {editor, editor as nsEditor, KeyCode, KeyMod} from 'monaco-editor/esm/vs/editor/editor.api';
+import {VimBar} from './VimBar';
 
 type IEditorMouseEvent = editor.IEditorMouseEvent;
 type Editor = nsEditor.IStandaloneCodeEditor;
@@ -30,14 +29,6 @@ export type EditorProps =
         }
     } &
     IEditorPreferences;
-
-function VimBar({editor}: { editor?: Editor | null }) {
-    const vimBar = useRef() as MutableRefObject<HTMLDivElement>;
-    useVimMode(editor, vimBar.current);
-    return (
-        <div className={'vimBar'} ref={vimBar}/>
-    )
-}
 
 class ErrorBoundary extends React.Component {
     state = {hasError: false};
@@ -104,9 +95,12 @@ export function Editor({
             editor.addAction(
                 {
                     id:    'blur-to-element',
-                    label: 'Focus label selector',
+                    label: 'Blur editor',
+                    keybindings: [
+                        KeyMod.CtrlCmd | KeyCode.KEY_B,
+                    ],
                     run:   ed => {
-                        focusConceptChooser();
+                        (document.activeElement as any)?.blur()
                     },
                 },
             );
@@ -130,7 +124,8 @@ export function Editor({
                               language="spw"
                               theme="spw-dark"
                               value={content || ''}
-                              height={h} width={w} options={options}/>
+                              height={h} width={w}
+                              options={options}/>
                 {vim && <VimBar editor={editor}/>}
             </div>
         </ErrorBoundary>

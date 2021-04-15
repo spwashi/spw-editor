@@ -1,17 +1,18 @@
-import {isSpwNode, SpwNode} from '@spwashi/spw/ast/node/spwNode';
+import {SpwItemKind} from '@spwashi/spw/constructs';
+import {SpwNode} from '@spwashi/spw/constructs/ast/nodes/abstract/node';
 
-export class NodeSelection {
-    protected _nodes?: SpwNode[];
+export class NodeSelection<K extends SpwItemKind = SpwItemKind> {
+    protected _nodes?: SpwNode<K>[];
 
-    get nodes(): SpwNode[] | undefined {
+    get nodes(): SpwNode<K>[] | undefined {
         return this._nodes;
     }
 
-    set nodes(value: SpwNode[] | undefined) {
+    set nodes(value: SpwNode<K>[] | undefined) {
         this._nodes = value;
     }
 
-    static from(nodes: NodeSelection | SpwNode | SpwNode[] | null) {
+    static from<Kind extends SpwItemKind>(nodes: NodeSelection<Kind> | SpwNode<Kind> | SpwNode<Kind>[] | null) {
         const selection = new this();
         if (!nodes) return selection;
 
@@ -29,7 +30,7 @@ export class NodeSelection {
             return selection;
 
         }
-        if (isSpwNode(nodes)) {
+        if (nodes.kind) {
             selection.nodes = [nodes]
             return selection;
 
@@ -39,7 +40,7 @@ export class NodeSelection {
     }
 
 
-    forEach(callback: { (node: SpwNode): void }) {
+    forEach(callback: { (node: SpwNode<any>): void }) {
         this._nodes?.forEach(callback);
     }
 }

@@ -1,11 +1,10 @@
-import {EditorSaveResponse} from '../Editor/hooks/editor/save/types';
-import {IConceptDescription} from '../ConceptSelector/ConceptSelector';
+import {IConceptDescription} from '../ConceptSelector/ConceptChooser';
 
-export type EditorMode = 'editor' | 'spw' | 'd3' | 'tree';
+export type EditorMode = 'editor' | 'tree';
 
 export interface StandardEditorParams {
     content: string | null;
     save: (str: string) => void
     fontSize: number;
-    srcSelection: IConceptDescription;
+    conceptSelection: IConceptDescription;
 }

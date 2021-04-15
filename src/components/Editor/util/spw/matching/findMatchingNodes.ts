@@ -1,8 +1,9 @@
-import {Runtime} from '@spwashi/spw';
 import {IPosition} from 'monaco-editor';
-import {SpwNode} from '@spwashi/spw/ast/node/spwNode';
 import {rule_1} from './rules/rule_1';
 import {NodeSelection} from './nodeSelection';
+import {SpwNode} from '@spwashi/spw/constructs/ast/nodes/abstract/node';
+import {Runtime} from '@spwashi/spw/constructs/runtime/runtime';
+import {SpwItemKind} from '@spwashi/spw/constructs';
 
 
 type NodeMatchingRule = (selection: NodeSelection, runtime: Runtime) => Promise<NodeSelection>;
@@ -18,16 +19,17 @@ export async function findMatchingNodes(runtime: Runtime | undefined, pos: IPosi
 
     let match =
             {
-                node:         null as null | SpwNode,
+                node:         null as null | SpwNode<SpwItemKind>,
                 matchQuality: 1,
             };
 
     const registers = runtime.registers;
 
-    (registers.get(Runtime.symbols.all)?.items || [])
+    (registers.all?.flat)
         .forEach(
-            ({item}: any) => {
-                const {start, end}    = item.location;
+            (item) => {
+                const {start, end} = item.hydrated?.location || {};
+                if (!(end?.offset) || !(start?.offset)) return;
                 const lineIsInRange   = start.line <= pos.lineNumber && end.line >= pos.lineNumber;
                 const columnIsInRange = start.column <= pos.column && end.column >= pos.column;
                 if (lineIsInRange && columnIsInRange) {

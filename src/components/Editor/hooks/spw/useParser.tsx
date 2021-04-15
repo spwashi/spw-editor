@@ -1,7 +1,8 @@
+import {Runtime} from '@spwashi/spw/constructs/runtime/runtime';
 import {useEffect, useState} from 'react';
 import {initializeRuntime, loadConcept} from '../../util/spw/runtime/loadConcept';
-import {Runtime} from '@spwashi/spw';
-import {SpwNode} from '@spwashi/spw/ast/node/spwNode';
+import {serializeLabelComponents} from '../../../SpwClient/context/persistence/util/label';
+import { SpwItem } from '@spwashi/spw/constructs/ast/abstract/item';
 
 /**
  * When the concept changes, parse the document and return the most current syntax tree
@@ -13,12 +14,15 @@ import {SpwNode} from '@spwashi/spw/ast/node/spwNode';
  */
 export function useParser(src: string | null, components: string[], trigger?: any[]): {
     runtime?: Runtime;
-    tree: SpwNode | SpwNode[];
-    ast: SpwNode | SpwNode[];
+    tree: SpwItem | SpwItem[];
+    ast: SpwItem | SpwItem[];
+    error: Error
 } {
     const [tree, setTree]       = useState<any>();
     const [ast, setAst]         = useState<any>();
     const [runtime, setRuntime] = useState<Runtime | undefined>();
+    const [error, setHasError]  = useState<any>(false);
+
     useEffect(
         () => {
             runAsync()
@@ -33,15 +37,12 @@ export function useParser(src: string | null, components: string[], trigger?: an
 
             async function runAsync() {
                 if (!src) return {};
-                const _runtime    = initializeRuntime();
-                const description = {components, body: `${src}`};
-
+                const _runtime = initializeRuntime();
                 try {
-                    const _ast = await loadConcept(
-                        description,
-                        _runtime,
-                    ) as unknown as SpwNode | SpwNode[];
-
+                    const label = serializeLabelComponents(components);
+                    const _ast  = await loadConcept({label, src}, _runtime) as unknown as SpwItem | SpwItem[];
+                    console.log(_ast);
+                    setHasError(false);
                     return {
                         ast:     _ast,
                         runtime: _runtime,
@@ -49,6 +50,13 @@ export function useParser(src: string | null, components: string[], trigger?: an
                     }
                 } catch (e) {
                     console.log(`%c ${e.message}`, 'style: red');
+                    console.log(e);
+                    if (e.name === 'SyntaxError') {
+                        const {location, found, message} = e;
+                        setHasError({location, found, message});
+                    } else {
+                        setHasError(e);
+                    }
                     return {}
                 }
             }
@@ -56,6 +64,7 @@ export function useParser(src: string | null, components: string[], trigger?: an
         trigger ?? [src],
     );
     return {
+        error,
         runtime,
         tree,
         ast,

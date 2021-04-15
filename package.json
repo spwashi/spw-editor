@@ -10,6 +10,14 @@
     "dist",
     "src"
   ],
+  "keywords": [
+    "spw",
+    "spw-lang",
+    "language",
+    "text-editor",
+    "syntax-highlighting",
+    "monaco"
+  ],
   "scripts": {
     "build": "webpack",
     "preserve": "webpack",
@@ -22,7 +30,7 @@
     "@monaco-editor/react": "^4.0.9",
     "@spwashi/language": "^1.3.0",
     "@spwashi/react-d3": "^0.2.9",
-    "@spwashi/spw": "0.1.0",
+    "@spwashi/spw": "0.1.3",
     "@types/d3": "^6.3.0",
     "@types/dedent": "^0.7.0",
     "@types/react-router": "^5.1.12",

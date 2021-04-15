@@ -7,7 +7,7 @@ export function initSpwTheme() {
     const language                               = {tokenizer};
     const themeData: Editor.IStandaloneThemeData = {
         colors:  {
-            'editor.background': '#282C34',
+            'editor.background': '#1c2024',
         },
         inherit: false,
         base:    'vs-dark',
