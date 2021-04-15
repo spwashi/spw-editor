@@ -1,6 +1,6 @@
 {
   "name": "@spwashi/spw-editor",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "repository": {
     "url": "https://github.com/spwashi/spw-editor"
   },
@@ -69,6 +69,7 @@
     "node-sass": "^4.14.1",
     "process": "^0.11.10",
     "sass-loader": "^10.1.0",
+    "serve-static": "^1.14.1",
     "style-loader": "^2.0.0",
     "ts-loader": "^8.0.17",
     "tslib": "^2.0.1",
@@ -77,8 +78,7 @@
     "webpack": "^5.24.3",
     "webpack-bundle-analyzer": "^4.4.0",
     "webpack-cli": "^4.5.0",
-    "webpack-dev-server": "^3.11.2",
-    "serve-static": "^1.14.1"
+    "webpack-dev-server": "^3.11.2"
   },
   "engines": {
     "node": ">=10"
