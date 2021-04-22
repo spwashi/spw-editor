@@ -50,7 +50,9 @@ export function EditorClientRouteComponent() {
     const label                                   = serializeLabelComponents(conceptSelection.components);
     const [state, dispatch]                       = usePersistenceContext({label});
     const save                                    = function (src: string) {
-        if (!label) return;
+        if (!label) {
+            console.error('Cannot save concept without a label')
+        }
         (['[server]', '[client]'] as originOption[]).forEach(
             (origin) => dispatch({
                                      type:    'begin-save',

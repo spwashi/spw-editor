@@ -1,10 +1,17 @@
-import React, {useEffect, useMemo, useState} from 'react';
-import {default as MonacoEditor} from '@monaco-editor/react';
+import React, {MutableRefObject, useCallback, useEffect, useMemo, useState} from 'react';
+import {default as MonacoEditor, loader} from '@monaco-editor/react';
 import {initSpwTheme} from '../../util/spw/monaco/initSpwTheme';
 import {IEditorPreferences, initEditorConfig} from '../../util/initEditorConfig';
 import {editor, editor as nsEditor, KeyCode, KeyMod} from 'monaco-editor/esm/vs/editor/editor.api';
 import {VimBar} from './VimBar';
+import {Monaco} from '../../types';
+import {
+    EditorDumbsaveHandler,
+    EditorDumbsaveState,
+    useControlledEditorSave,
+} from '../../hooks/editor/save/useControlledEditorSave';
 
+type IStandaloneCodeEditor = editor.IStandaloneCodeEditor;
 type IEditorMouseEvent = editor.IEditorMouseEvent;
 type Editor = nsEditor.IStandaloneCodeEditor;
 
@@ -24,6 +31,8 @@ export type EditorProps =
          * Array of [value, valueSetter]
          */
         controller?: EditorContentController;
+        save?: EditorDumbsaveHandler;
+        stateRef?: MutableRefObject<EditorDumbsaveState | null | undefined> | null
         events?: {
             onMouseDown?: (e: IEditorMouseEvent) => void
         }
@@ -75,16 +84,27 @@ export function Editor({
                            fontSize, size, vim,
                            content:  content = '',
                            onChange: setContent = () => {},
-                           events:   {
-                                         onMouseDown,
-                                     } = {},
+                           save,
+                           stateRef = {current: null},
+                           events: {
+                                       onMouseDown,
+                                   } = {},
                        }: EditorProps) {
+
     // props
     useSetTextIfInvalid(content, setContent);
-    const {w, h, options} = useEditorOptions({fontSize, size}, typeof content === 'string' ? content : undefined);
+
+    const editorDumbsaveState = useControlledEditorSave(content, save);
+
+    if (stateRef) stateRef.current = editorDumbsaveState;
+
+    const {w, h, options}     = useEditorOptions({fontSize, size}, typeof content === 'string' ? content : undefined);
     // init
-    useEffect(() => { initSpwTheme() }, [])
     const [editor, setEditor] = useState<Editor | null>(null);
+    const [theme, setTheme]   = useState('vs-dark');
+    const onBeforeMount       = useCallback((m: Monaco) => {
+        setTheme(initSpwTheme(m).themeName)
+    }, [])
 
     //
     // Behaviors...
@@ -94,12 +114,12 @@ export function Editor({
 
             editor.addAction(
                 {
-                    id:    'blur-to-element',
-                    label: 'Blur editor',
+                    id:          'blur-to-element',
+                    label:       'Blur editor',
                     keybindings: [
                         KeyMod.CtrlCmd | KeyCode.KEY_B,
                     ],
-                    run:   ed => {
+                    run:         ed => {
                         (document.activeElement as any)?.blur()
                     },
                 },
@@ -120,9 +140,11 @@ export function Editor({
         <ErrorBoundary>
             <div style={{display: 'block', width: '100%'}}>
                 <MonacoEditor onChange={onValueChange}
-                              onMount={setEditor}
+                              beforeMount={onBeforeMount}
+                              onMount={e => setEditor(e as IStandaloneCodeEditor)}
                               language="spw"
-                              theme="spw-dark"
+                              defaultLanguage="spw"
+                              theme={theme}
                               value={content || ''}
                               height={h} width={w}
                               options={options}/>

@@ -1,7 +1,7 @@
 import {Runtime} from '@spwashi/spw/constructs/runtime/runtime';
 import {useEffect, useState} from 'react';
-import {initializeRuntime, loadConcept} from '../../util/spw/runtime/loadConcept';
-import {serializeLabelComponents} from '../../../SpwClient/context/persistence/util/label';
+import {initializeRuntime, loadConcept} from '../util/runtime/loadConcept';
+import {serializeLabelComponents} from '../../context/persistence/util/label';
 import { SpwItem } from '@spwashi/spw/constructs/ast/abstract/item';
 
 /**
@@ -41,7 +41,6 @@ export function useParser(src: string | null, components: string[], trigger?: an
                 try {
                     const label = serializeLabelComponents(components);
                     const _ast  = await loadConcept({label, src}, _runtime) as unknown as SpwItem | SpwItem[];
-                    console.log(_ast);
                     setHasError(false);
                     return {
                         ast:     _ast,

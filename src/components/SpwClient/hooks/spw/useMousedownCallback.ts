@@ -1,7 +1,10 @@
 import {Runtime} from '@spwashi/spw';
 import {useCallback, useEffect, useRef} from 'react';
-import {IEditorMouseEvent} from '../../../types';
-import {findMatchingNodes} from '../../../util/spw/matching/findMatchingNodes';
+import {editor} from 'monaco-editor/esm/vs/editor/editor.api';
+
+import {findMatchingNodes} from '../util/matching/findMatchingNodes';
+
+export type IEditorMouseEvent = editor.IEditorMouseEvent;
 
 /**
  * Creates a modifyX for the mousedown event when
@@ -25,8 +28,9 @@ export function useMousedownCallback(runtime: Runtime | undefined) {
                                          console.log(
                                              {
                                                  key: isOne ? nodes?.[0].key : null,
+                                                 [isOne ? 'node' : 'nodes']:
+                                                      isOne ? nodes?.[0] : nodes,
                                              },
-                                             isOne ? nodes?.[0] : nodes,
                                          )
                                          console.log(
                                          )

@@ -1,8 +1,9 @@
+.idea
 *.log
 .DS_Store
 node_modules
 .cache
 dist
 out
-storybook-static
-.idea
+
+scripts/deploy.sh

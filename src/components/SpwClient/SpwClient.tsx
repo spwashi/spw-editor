@@ -1,12 +1,12 @@
-import React, {useEffect, useState} from 'react';
-import {useControlledEditorSave} from '../Editor/hooks/editor/save/useControlledEditorSave';
-import {useMousedownCallback} from '../Editor/hooks/editor/save/useMousedownCallback';
-import Switch from './components/Switch';
+import React, {useEffect, useRef, useState} from 'react';
+import {useMousedownCallback} from './hooks/spw/useMousedownCallback';
+import ComponentSwitch from './components/Switch';
 import {ErrorBoundary} from 'react-error-boundary';
 import {ErrorFallback} from './components/ErrorFallback';
 import {EditorMode, StandardEditorParams} from './types';
-import {useParser} from '../Editor/hooks/spw/useParser';
+import {useParser} from './hooks/spw/useParser';
 import ReactJson from 'react-json-view';
+import {EditorDumbsaveState} from '../Editor/hooks/editor/save/useControlledEditorSave';
 
 /**
  * A text editor with externally defined state controllers
@@ -27,30 +27,35 @@ export function SpwClient(params: StandardEditorParams & { mode: EditorMode }) {
     useEffect(() => { setInnerContent(outerContent); }, [outerContent])
 
 
-    const {currentSave}                      = useControlledEditorSave(innerContent, save);
+    const editorStateRef = useRef<EditorDumbsaveState | undefined | null>();
+    const {currentSave}  = editorStateRef?.current ?? {};
+
     const spwParseDeps                       = [currentSave, innerContent, conceptSelection.id];
     const {error: parseError, tree, runtime} = useParser(innerContent, conceptSelection.components, spwParseDeps);
     const onMouseDown                        = useMousedownCallback(runtime);
-    useEffect(() => setHasError(parseError), [parseError]);
 
+    useEffect(() => setHasError(parseError), [parseError]);
     let color = 'black';
     if (currentSave) {
         color = 'yellow'
     } else if (parseError) {
         color = '#2b0000'
-    }
 
+    }
+    const treeConfig   = (!mode || (mode === 'tree')) ? tree : undefined;
+    const editorConfig = (!mode || (mode === 'editor')) ? {
+        fontSize,
+        onMouseDown,
+        conceptSelection,
+        content:  innerContent,
+        onChange: setInnerContent,
+        save,
+        stateRef: editorStateRef,
+    } : undefined;
     return (
         <ErrorBoundary FallbackComponent={ErrorFallback} onReset={(...args) => { setHasError(args); }}>
             <div style={{height: '100%', display: 'flex', flexDirection: 'column', border: `thick solid ${color}`}}>
-                <Switch tree={(!mode || (mode === 'tree')) ? tree : undefined}
-                        editor={(!mode || (mode === 'editor')) ? {
-                            fontSize,
-                            onMouseDown,
-                            conceptSelection,
-                            content:         innerContent,
-                            onContentChange: setInnerContent,
-                        } : undefined}/>
+                <ComponentSwitch tree={treeConfig} editor={editorConfig}/>
                 {
                     error ? (
                               <div className={'error'}

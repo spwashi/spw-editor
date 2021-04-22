@@ -1229,10 +1229,10 @@
   dependencies:
     state-local "^1.0.6"
 
-"@monaco-editor/react@^4.0.9":
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/@monaco-editor/react/-/react-4.1.0.tgz#9a362a4e0973c9958574551984a3c3eeeff06e5f"
-  integrity sha512-Hh895v/KfGgckDLXq8sdDGT4xS89+2hbQOP1l57sLd2XlJycChdzPiCj02nQDIduLmUIVHittjaj1/xmy94C3A==
+"@monaco-editor/react@^4.1.2":
+  version "4.1.2"
+  resolved "https://registry.yarnpkg.com/@monaco-editor/react/-/react-4.1.2.tgz#545db1a05dd677ebf6d8608d1b797a7227118a8b"
+  integrity sha512-srIlPCtUio3mrxx3kCsz4KaJY3TkVIwx7aPf63VMOM7qxeURfDdAE5ujifnHdw07W6Q3Vmaa7Yd9zeG8VenjYA==
   dependencies:
     "@monaco-editor/loader" "^1.0.1"
     prop-types "^15.7.2"
@@ -1296,10 +1296,10 @@
     tslib "^2.1.0"
     typescript "^3.9.7"
 
-"@spwashi/spw@0.1.3":
-  version "0.1.3"
-  resolved "https://registry.yarnpkg.com/@spwashi/spw/-/spw-0.1.3.tgz#49edfe1ad13a3b4153bf4051c63a9ca7d9c28c67"
-  integrity sha512-8gcgvCx/NCcG0Pd3nn5FjD0kOm6dhICp7a6Q4UftzjNUqGP2iSTXnl0o2QKPjWA9zxO+a3pywtJtBJrIELhXbQ==
+"@spwashi/spw@^0.1.6":
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/@spwashi/spw/-/spw-0.1.6.tgz#217effb6e435ba590026dac40c5d8aa109f08483"
+  integrity sha512-TSvuVke3KFnWU+dpduJmXHeEEWA473yfRzfW3EIad9rBGa9PtzQRLqBeFQ0Y/LE7xNi/473riDnC7xUWpYToGg==
   dependencies:
     "@babel/core" "^7.12.16"
     "@babel/plugin-proposal-class-properties" "^7.12.13"
@@ -5555,15 +5555,27 @@ mixin-deep@^1.2.0:
   dependencies:
     minimist "^1.2.5"
 
-monaco-editor@^0.21.2:
-  version "0.21.3"
-  resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.21.3.tgz#3381b66614b64d1c5e3b77dd5564ad496d1b4e5d"
-  integrity sha512-9N7wATLpi+googstvtm6IKg97vPQ77FDYEpkow5tLriM/VJ0DaTRyUP4UVzcoH7KlPDX+e/rE7/imcOUeGkT6g==
+monaco-editor-core@^0.23.0:
+  version "0.23.0"
+  resolved "https://registry.yarnpkg.com/monaco-editor-core/-/monaco-editor-core-0.23.0.tgz#239a2a942de0bf049e3334e6dc561db85d5534dd"
+  integrity sha512-1LHVpCHp+FErFdUjwzal1muTe+hUkR5CfXAxzua//eHB31bHdWVe15OJPEPS3/rxmfQtl9wZqJdHi4FcGz2zog==
 
-monaco-vim@^0.1.9:
-  version "0.1.12"
-  resolved "https://registry.yarnpkg.com/monaco-vim/-/monaco-vim-0.1.12.tgz#a36a2dfda79665d2037e456fa637a3a6e68a7ef7"
-  integrity sha512-v/KRwJoGAow0mVu0pq2aoeq9EwmT03+X5g4J8Uw5hf5e5kQW5ZV3AKzGFsSmutBH5hHISMAfK/XNQT+cOH6fwA==
+monaco-editor-webpack-plugin@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/monaco-editor-webpack-plugin/-/monaco-editor-webpack-plugin-3.0.1.tgz#b9bf93314eb2708907c232cfbf359622e7a6d98a"
+  integrity sha512-Hym4HqWgIpyoi9G0spln/b/7rkDKfYwIOrNzo1fHHMc+MLYSwD1JXHwKSDS77X27ZHfVJsEXbMZYdGhSYuVF0w==
+  dependencies:
+    loader-utils "^2.0.0"
+
+monaco-editor@^0.23.0:
+  version "0.23.0"
+  resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.23.0.tgz#24844ba5640c7adb3a2a3ff3b520cf2d7170a6f0"
+  integrity sha512-q+CP5zMR/aFiMTE9QlIavGyGicKnG2v/H8qVvybLzeFsARM8f6G9fL0sMST2tyVYCwDKkGamZUI6647A0jR/Lg==
+
+monaco-vim@^0.1.13:
+  version "0.1.13"
+  resolved "https://registry.yarnpkg.com/monaco-vim/-/monaco-vim-0.1.13.tgz#b148698b199cbd0cf18820d73dd947859e92146d"
+  integrity sha512-nhl84Xk7dcqXiL+c1HlaGmlEscA0hm01yScY4gBd+5GejzWrX4oHhGYlwSDyKljoCyAMUYKvbkEQK7NENl1zkw==
 
 ms@2.0.0:
   version "2.0.0"

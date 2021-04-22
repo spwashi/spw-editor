@@ -1,7 +1,7 @@
 import {ISpwDocument} from '../../actions/util';
 
 
-const server      = 'http://localhost:8000';
+const server      = process.env.SPW_SERVER_URL || 'http://localhost:8000';
 const route__find = (label: string) => `${server}/concept/find?label=${encodeURIComponent(label)}`;
 const route__save = () => `${server}/concept/save`;
 

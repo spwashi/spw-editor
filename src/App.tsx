@@ -1,14 +1,11 @@
-import React from 'react';
 import {BrowserRouter, Route, Switch} from 'react-router-dom';
-import 'reset-css';
 import {ThemeProvider} from '@material-ui/core';
-import {hot} from 'react-hot-loader/root';
-import {PersistenceContextProvider} from './components/SpwClient/context/persistence/context';
 import {muiTheme} from './theme/mui';
+import {PersistenceContextProvider} from './components/SpwClient/context/persistence/context';
 import {EditorClientRouteComponent} from './routes/client/Client';
+import React from 'react';
 
-export default hot(ConnectedApp);
-function ConnectedApp() {
+export default function ConnectedApp() {
     return (
         <BrowserRouter>
             <ThemeProvider theme={muiTheme}>
@@ -21,4 +18,3 @@ function ConnectedApp() {
         </BrowserRouter>
     )
 }
-

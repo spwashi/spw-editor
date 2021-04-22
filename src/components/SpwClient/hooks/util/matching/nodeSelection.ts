@@ -1,5 +1,5 @@
 import {SpwItemKind} from '@spwashi/spw/constructs';
-import {SpwNode} from '@spwashi/spw/constructs/ast/nodes/abstract/node';
+import { SpwNode } from '@spwashi/spw/constructs/ast/nodes/abstract/node';
 
 export class NodeSelection<K extends SpwItemKind = SpwItemKind> {
     protected _nodes?: SpwNode<K>[];
@@ -30,7 +30,7 @@ export class NodeSelection<K extends SpwItemKind = SpwItemKind> {
             return selection;
 
         }
-        if (nodes.kind) {
+        if (nodes.hydrated?.kind) {
             selection.nodes = [nodes]
             return selection;
 

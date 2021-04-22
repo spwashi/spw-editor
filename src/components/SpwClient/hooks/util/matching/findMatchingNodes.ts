@@ -1,4 +1,4 @@
-import {IPosition} from 'monaco-editor';
+import {IPosition} from 'monaco-editor/esm/vs/editor/editor.api';
 import {rule_1} from './rules/rule_1';
 import {NodeSelection} from './nodeSelection';
 import {SpwNode} from '@spwashi/spw/constructs/ast/nodes/abstract/node';
@@ -29,7 +29,8 @@ export async function findMatchingNodes(runtime: Runtime | undefined, pos: IPosi
         .forEach(
             (item) => {
                 const {start, end} = item.hydrated?.location || {};
-                if (!(end?.offset) || !(start?.offset)) return;
+                if (!start || !end) return;
+                if (typeof start?.offset == null || typeof end?.offset == null) return;
                 const lineIsInRange   = start.line <= pos.lineNumber && end.line >= pos.lineNumber;
                 const columnIsInRange = start.column <= pos.column && end.column >= pos.column;
                 if (lineIsInRange && columnIsInRange) {

@@ -1,3 +1,3 @@
 export function serializeLabelComponents(components: string[]) {
-    return components.map(c => `<${c}>`).join(' ');
+    return components.map(c => `${c}`).join('/');
 }

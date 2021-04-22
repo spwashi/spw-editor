@@ -1,6 +1,6 @@
 import React, {MutableRefObject, useRef, useState} from 'react';
 import {useVimMode} from '../../hooks/editor/useVimMode';
-import {editor as nsEditor} from 'monaco-editor';
+import {editor as nsEditor} from 'monaco-editor/esm/vs/editor/editor.api';
 import styled from 'styled-components';
 import classNames from 'classnames';
 

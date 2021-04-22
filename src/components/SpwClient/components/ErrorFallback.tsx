@@ -1,6 +1,6 @@
 import React from "react";
 
-const isDev = process.env.MODE === 'development';
+const isDev = false;
 
 export function ErrorFallback({error, resetErrorBoundary}: { error: Error, resetErrorBoundary: () => void }) {
     if (!isDev) return null;
