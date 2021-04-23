@@ -56,7 +56,7 @@ export function Editor(properties: EditorProps & ContentSource) {
               vimModeEnabled,
               preferences,
               content:  _content,
-              document: {id, content: d_content = ''} = {id: '[none]', content: ''},
+              document: {id, content: d_content = ''} = {hash: '[none]', content: ''},
               children,
 
               events                                  = {},

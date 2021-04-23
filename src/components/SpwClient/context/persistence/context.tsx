@@ -5,7 +5,7 @@ import {initSpwServiceState, ISpwServiceState, PersistenceStateContext} from './
 import {getLocalTimestamp} from './util/time';
 import {find as getLocalItem, save as setLocalItem} from './services/local/api';
 import {find as findServerItem, save as saveServerItem} from './services/server/api';
-import {ISpwDocument} from './actions/util';
+import {ISpwConcept} from './actions/util';
 import {CompleteSaveAction} from './actions/save/save';
 import {CompleteSyncAction} from './actions/sync/sync';
 import {originOption} from './types';
@@ -31,14 +31,36 @@ const spwServiceReducer: Reducer<ISpwServiceState, ISpwServiceAction> = ((state,
                 loading:
                     {
                         timestamp: getLocalTimestamp(),
-                        label:     action.payload.label,
+                        item:      action.payload,
                     },
             };
         case 'complete-synchronize':
             return {
                 ...state,
                 loading:    false,
-                loadedItem: action.payload,
+                loadedItem: {
+                    ...state.loadedItem,
+                    [action.meta.origin]:
+                        {
+                            item:      action.payload.label || action.payload.hash ? action.payload : null,
+                            timestamp: getLocalTimestamp(),
+                        },
+                },
+            }
+        case 'complete-save':
+            return {
+                ...state,
+                saving:     {
+                    ...state.saving,
+                    [action.meta.origin]: null,
+                },
+                loadedItem: {
+                    ...state.loadedItem,
+                    [action.meta.origin]: {
+                        item:      action.payload,
+                        timestamp: getLocalTimestamp(),
+                    },
+                },
             }
     }
     return state;
@@ -52,23 +74,24 @@ export function PersistenceContextProvider({children}: { children: React.ReactEl
     )
 }
 type SaveLocation = 'local' | 'server';
-export function usePersistenceContext({label}: { label?: string | null } = {}): [ISpwServiceState, ISpwServiceDispatch] {
-    const state                         = useContext(PersistenceStateContext);
-    const dispatch: ISpwServiceDispatch = useContext(PersistenceDispatchContext)
-    const saveLocation                  = 'server' as SaveLocation;
-
-    useEffect(() => {
-        if (!label) return;
-        if (state.loading && state.loading.label === label) return;
-        dispatch({type: 'begin-synchronize', payload: {label}})
-    }, [label]);
-
+type PersistenceContextProps = {
+    label?: string | null,
+    hash?: string | null
+};
+type Out = [ISpwServiceState, ISpwServiceDispatch];
+function useCompleteSync(state: ISpwServiceState, dispatch: ISpwServiceDispatch, saveLocation: 'local' | 'server') {
     useEffect(
         () => {
-            if (!state.loading) return;
-            let label = state.loading.label;
-            if (!label) return;
-            function complete(item: ISpwDocument, origin: originOption) {
+            if (!state.loading) {
+                console.info('not completing sync: no item is loading')
+                return;
+            }
+            let {label, hash} = state.loading.item || {};
+            if (!label && !hash) {
+                console.error('Could not i')
+                return;
+            }
+            function complete(item: ISpwConcept, origin: originOption) {
                 dispatch({
                              type:    'complete-synchronize',
                              payload: item,
@@ -77,10 +100,18 @@ export function usePersistenceContext({label}: { label?: string | null } = {}): 
             }
             switch (saveLocation) {
                 case 'server':
-                    findServerItem(label)
+                    if (!label && !hash) {
+                        break;
+                    }
+
+                    findServerItem({label, hash})
                         .then(item => { complete(item, '[server]'); })
                     break;
                 case 'local':
+                    if (!label) {
+                        console.error('Cannot find without label')
+                        break;
+                    }
                     const local = getLocalItem(label)
                     if (!local) {
                         console.error('Could not find in database');
@@ -93,38 +124,70 @@ export function usePersistenceContext({label}: { label?: string | null } = {}): 
         },
         [state.loading],
     );
+}
+function useBeginSync({label, hash}: PersistenceContextProps, state: ISpwServiceState, dispatch: ISpwServiceDispatch) {
+    useEffect(() => {
+        if (label) {
+            dispatch({type: 'begin-synchronize', payload: {label}});
+            return;
+        }
+    }, [label]);
+    useEffect(() => {
+        const labelMismatched = state.loading && state.loading.item.label !== label;
+        if (hash && !labelMismatched) {
+            label && console.log('ignoring label in favor of hash', state.loading, label)
+            dispatch({type: 'begin-synchronize', payload: {hash}})
+            return;
+        }
+    }, [hash]);
+}
+export function usePersistenceContext({hash, label}: PersistenceContextProps = {}): Out {
+    const state                         = useContext(PersistenceStateContext);
+    const dispatch: ISpwServiceDispatch = useContext(PersistenceDispatchContext);
+    const saveLocation                  = 'server' as SaveLocation;
+    useBeginSync({hash, label}, state, dispatch);
+    useCompleteSync(state, dispatch, saveLocation);
 
     useEffect(
         () => {
-            if (!label) return;
-            if (!state.saving) { return; }
+            if (!state.saving) {
+                console.info('not completing save: no item is loading')
+
+                return;
+            }
 
             const getItem  = (origin: originOption) => state.saving[origin]?.item
-            const complete = (origin: originOption) => dispatch({
-                                                                    type: 'complete-save',
-                                                                    meta: {origin},
-                                                                } as CompleteSaveAction);
+            const complete = (origin: originOption, concept?: ISpwConcept) => dispatch({
+                                                                                           type:    'complete-save',
+                                                                                           payload: concept,
+                                                                                           meta:    {origin},
+                                                                                       } as CompleteSaveAction);
+
             (() => {
                 const concept = getItem('[client]');
                 if (!concept) {
-                    console.error('expected a concept (client)')
+                    console.log('not completing client save: no item is being saved');
+                    return;
+                }
+                if (!label) {
+                    console.log('not completing client save: no label was provided');
                     return;
                 }
                 setLocalItem(label, concept);
-                complete('[client]');
+                complete('[client]', concept);
             })();
 
             (() => {
                     if (saveLocation !== 'server') return;
                     const concept = getItem('[server]');
                     if (!concept) {
-                        console.error('expected a concept (server)');
+                        console.log('not completing server save: no item is being saved');
                         return;
                     }
                     saveServerItem(concept)
                         .then(response => {
                             console.log(response?.concept)
-                            complete('[server]');
+                            complete('[server]', response?.concept);
                         });
                 }
             )()

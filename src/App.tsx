@@ -8,7 +8,7 @@ export default function ConnectedApp() {
         <BrowserRouter>
             <PersistenceContextProvider>
                 <Switch>
-                    <Route path={'/:label*'} component={EditorClientRouteComponent}/>
+                    <Route path={'/:hash?'} component={EditorClientRouteComponent}/>
                 </Switch>
             </PersistenceContextProvider>
         </BrowserRouter>

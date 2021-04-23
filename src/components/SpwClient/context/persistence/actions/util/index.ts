@@ -6,4 +6,5 @@ export type OriginAction =
     };
 export type ServerAction = OriginAction & { meta: { origin: '[server]' } }
 export type ClientAction = OriginAction & { meta: { origin: '[client]' } }
-export type ISpwDocument = { label: string, src: string };
+export type ISpwConceptHash = string;
+export type ISpwConcept = { hash: ISpwConceptHash, label: string, src: string };

@@ -1,17 +1,23 @@
 import {createContext} from 'react';
 import {LocalTimestamp} from '../types';
-import {ISpwDocument} from '../actions/util';
+import {ISpwConcept} from '../actions/util';
 
-type SaveState = { timestamp: LocalTimestamp, item: ISpwDocument } | null
+type SaveState = { timestamp: LocalTimestamp, item: ISpwConcept } | null
 
 
 export type ISpwServiceState = {
-    loadedItem: ISpwDocument | null;
+    loadedItem: {
+                    '[server]'?: SaveState,
+                    '[client]'?: SaveState
+                } | null;
     saving: {
         '[server]'?: SaveState,
         '[client]'?: SaveState
     };
-    loading: { timestamp: LocalTimestamp, label: string } | false;
+    loading: {
+                 timestamp: LocalTimestamp,
+                 item: Partial<ISpwConcept>
+             } | false;
 };
 export function initSpwServiceState(): ISpwServiceState {
     return {
