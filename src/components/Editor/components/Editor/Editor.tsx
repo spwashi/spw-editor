@@ -1,155 +1,122 @@
-import React, {MutableRefObject, useCallback, useEffect, useMemo, useState} from 'react';
-import {default as MonacoEditor, loader} from '@monaco-editor/react';
-import {initSpwTheme} from '../../util/spw/monaco/initSpwTheme';
-import {IEditorPreferences, initEditorConfig} from '../../util/initEditorConfig';
-import {editor, editor as nsEditor, KeyCode, KeyMod} from 'monaco-editor/esm/vs/editor/editor.api';
-import {VimBar} from './VimBar';
-import {Monaco} from '../../types';
-import {
-    EditorDumbsaveHandler,
-    EditorDumbsaveState,
-    useControlledEditorSave,
-} from '../../hooks/editor/save/useControlledEditorSave';
+import React from 'react';
+import {default as MonacoEditor} from '@monaco-editor/react';
+import {IEditorPreferences} from '../../util/initEditorConfig';
+import {editor} from 'monaco-editor/esm/vs/editor/editor.api';
+import {VimBar} from './components/VimBar';
+import {EditorDumbsaveHandler, useEditorSave} from '../../hooks/editor/save/useEditorSave';
+import {BlurHandler, useMonacoEditorInstance} from './hooks/useMonacoEditorInstance';
+import {useMonacoOnInit} from './hooks/useMonaco';
+import {ErrorBoundary} from './components/Error';
+import {useEditorOptions} from './hooks/useEditorOptions';
+import {useSpwParser} from '../../hooks/spw/useSpwParser';
+import {useMousedownCallback} from '../../hooks/spw/useMousedownCallback';
+import ReactJson from 'react-json-view';
+import {useKeydownCallback} from './useKeydownCallback';
 
 type IStandaloneCodeEditor = editor.IStandaloneCodeEditor;
 type IEditorMouseEvent = editor.IEditorMouseEvent;
-type Editor = nsEditor.IStandaloneCodeEditor;
 
-export type EditorContentController = [string, (s: string) => any];
+type ContentSource =
+    {
+        content: string
+        document?: undefined;
+        children?: undefined;
+    } | {
+        document: {
+            id: string,
+            content: string
+        }
+        content?: undefined;
+        children?: undefined;
+    } | {
+        content?: undefined;
+        document?: undefined;
+        children: string
+    };
 export type EditorProps =
     {
-        onChange?: (text: string) => void | unknown;
-        /**
-         * Whether to enable vim mode
-         */
-        vim?: boolean;
-        /**
-         * Content in the editor
-         */
-        content?: string | any;
-        /**
-         * Array of [value, valueSetter]
-         */
-        controller?: EditorContentController;
-        save?: EditorDumbsaveHandler;
-        stateRef?: MutableRefObject<EditorDumbsaveState | null | undefined> | null
+        inline?: boolean;
+        vimModeEnabled?: boolean;
+        preferences?: IEditorPreferences;
         events?: {
-            onMouseDown?: (e: IEditorMouseEvent) => void
+            onMouseDown?: (e: IEditorMouseEvent) => void,
+            onChange?: (text: string) => void | unknown;
+            onBlur?: BlurHandler;
+            onSave?: EditorDumbsaveHandler;
         }
-    } &
-    IEditorPreferences;
+    } & (ContentSource);
 
-class ErrorBoundary extends React.Component {
-    state = {hasError: false};
-
-    constructor(props: {}) {
-        super(props);
-        this.state = {hasError: false};
-    }
-
-    static getDerivedStateFromError(error: Error | unknown) {
-        // Update state so the next render will show the fallback UI.
-        return {hasError: true};
-    }
-
-    componentDidCatch(error: Error | unknown, errorInfo: unknown) {
-        // You can also log the error to an error reporting service
-    }
-
-    render() {
-        if (this.state.hasError) {
-            // You can render any custom fallback UI
-            return <h1>Error</h1>;
-        }
-
-        return this.props.children;
-    }
-}
-
-
-function useSetTextIfInvalid(text: string | undefined, setText: (c: string) => void) {
-    useEffect(() => { if (typeof text !== 'string') {setText('{{_error INPUT IS NOT TEXT error_}}')}},
-              [text])
-}
-function useEditorOptions({fontSize, size}: IEditorPreferences, text: string | undefined) {
-    const {w, h, options} = useMemo(() => initEditorConfig({fontSize, size}, text),
-                                    [fontSize, size, text])
-    return {w, h, options};
-}
 /**
  * Editor for the Spw Programming Language.
  *
  */
-export function Editor({
-                           fontSize, size, vim,
-                           content:  content = '',
-                           onChange: setContent = () => {},
-                           save,
-                           stateRef = {current: null},
-                           events: {
-                                       onMouseDown,
-                                   } = {},
-                       }: EditorProps) {
+export function Editor(properties: EditorProps & ContentSource) {
+    const {
+              inline,
+              vimModeEnabled,
+              preferences,
+              content:  _content,
+              document: {id, content: d_content = ''} = {id: '[none]', content: ''},
+              children,
 
-    // props
-    useSetTextIfInvalid(content, setContent);
+              events                                  = {},
 
-    const editorDumbsaveState = useControlledEditorSave(content, save);
+          } = properties;
 
-    if (stateRef) stateRef.current = editorDumbsaveState;
+    const content = d_content || _content || children || '';
 
-    const {w, h, options}     = useEditorOptions({fontSize, size}, typeof content === 'string' ? content : undefined);
-    // init
-    const [editor, setEditor] = useState<Editor | null>(null);
-    const [theme, setTheme]   = useState('vs-dark');
-    const onBeforeMount       = useCallback((m: Monaco) => {
-        setTheme(initSpwTheme(m).themeName)
-    }, [])
-
-    //
-    // Behaviors...
-    useEffect(
-        () => {
-            if (!editor) return;
-
-            editor.addAction(
-                {
-                    id:          'blur-to-element',
-                    label:       'Blur editor',
-                    keybindings: [
-                        KeyMod.CtrlCmd | KeyCode.KEY_B,
-                    ],
-                    run:         ed => {
-                        (document.activeElement as any)?.blur()
-                    },
-                },
-            );
-            editor.onMouseDown(onMouseDown ?? (() => {}))
-        },
-        [editor],
-    );
-
-    // vim
-
-
-    const onValueChange = (val: string | unknown) => {
-        if (typeof val !== 'string') return setContent(JSON.stringify(val));
-        setContent(val || '');
-    };
+    const {theme}             = useMonacoOnInit();
+    const parsed              = useSpwParser(content, id, [content]);
+    const onMouseDown         = useMousedownCallback(parsed.runtime);
+    const onKeyDown           = useKeydownCallback(inline);
+    const [editor, setEditor] = useMonacoEditorInstance({onMouseDown, onKeyDown, onBlur: events.onBlur});
+    const saveStatus          = useEditorSave(content, events.onSave);
+    const config              = useEditorOptions(preferences, content);
+    const color               = saveStatus.currentSave ? 'yellow' : parsed.error ? '#2b0000' : 'black';
     return (
         <ErrorBoundary>
-            <div style={{display: 'block', width: '100%'}}>
-                <MonacoEditor onChange={onValueChange}
-                              beforeMount={onBeforeMount}
-                              onMount={e => setEditor(e as IStandaloneCodeEditor)}
-                              language="spw"
-                              defaultLanguage="spw"
-                              theme={theme}
-                              value={content || ''}
-                              height={h} width={w}
-                              options={options}/>
-                {vim && <VimBar editor={editor}/>}
-            </div>
+            <MonacoEditor
+                options={config.options}
+                width={config.w}
+                height={config.h}
+
+                language="spw"
+                defaultLanguage="spw"
+                theme={theme}
+
+                value={content || ''}
+
+                onChange={s => events.onChange?.(typeof s === 'string' ? s : JSON.stringify(s))}
+                onMount={e => setEditor(e as IStandaloneCodeEditor)}
+            />
+            {vimModeEnabled && <VimBar editor={editor}/>}
+            {
+                parsed.error ? (
+                                 <div className={'error'}
+                                      style={{
+                                          background: 'whitesmoke',
+                                          border:     'thick solid ' + color,
+                                          position:   'absolute',
+                                          bottom:     0,
+                                          right:      0,
+                                          zIndex:     1,
+                                      }}>
+                                     <div className={'title'}
+                                          style={{
+                                              background: color,
+                                              color:      'whitesmoke',
+                                              padding:    '.5rem',
+                                              fontSize:   '1.5rem',
+                                              zIndex:     1,
+                                          }}>Error
+                                     </div>
+                                     <div className="content">
+                                         <pre style={{fontSize: '1rem'}}><ReactJson src={parsed.error}/></pre>
+                                     </div>
+                                 </div>
+                             )
+                             : null
+            }
         </ErrorBoundary>
     );
 }

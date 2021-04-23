@@ -1,17 +1,17 @@
 import {useLocation, useParams} from 'react-router-dom';
 import {EditorMode} from '../../components/SpwClient/types';
 import React, {useEffect, useState} from 'react';
-import {ConceptChooser, IConceptDescription} from '../../components/ConceptSelector/ConceptChooser';
+import {ConceptChooser} from '../../components/ConceptSelector/ConceptChooser';
 import {usePersistenceContext} from '../../components/SpwClient/context/persistence/context';
 import {SpwClient} from '../../components/SpwClient/SpwClient';
 import styled from 'styled-components';
 import {useLocalStorage} from '../../hooks/useLocalStorage';
 import {originOption} from '../../components/SpwClient/context/persistence/types';
 import {SaveAction} from '../../components/SpwClient/context/persistence/actions/save/save';
-import {serializeLabelComponents} from '../../components/SpwClient/context/persistence/util/label';
+import {navigateToConcept} from '../../util/internal';
 
 const useQuery = () => new URLSearchParams(useLocation().search);
-type AppRouteParams = { mode: EditorMode, concepts: any };
+type AppRouteParams = { label: string };
 
 
 const AppWrapper =
@@ -35,50 +35,46 @@ function useFontSize() {
 }
 
 export function EditorClientRouteComponent() {
-    const urlParams                   = useQuery();
-    const defaultConcept              = urlParams.get('concept') ?? '';
-    const mode                        = (urlParams.get('mode') ?? 'editor') as EditorMode;
-    const {concepts = defaultConcept} = useParams<AppRouteParams>();
+    const urlParams         = useQuery();
+    const fontSize          = useFontSize();
+    const {label: _label}   = useParams<AppRouteParams>();
+    const [key, setKey]     = useState(() => Date.now());
+    const mode              = (urlParams.get('mode') ?? 'editor') as EditorMode;
+    const [label, setLabel] = useState<string | null>((_label.split('/')).map((_label: string) => decodeURIComponent(_label)).join(' '));
+    const [state, dispatch] = usePersistenceContext({label});
 
-    const fontSize                    = useFontSize();
-    const defaultComponents: string[] = concepts ? (concepts).split('/') : [];
-    const conceptIdCount              = defaultComponents.length || 1;
-    const canOverrideDefaults         = false;
+    function save(src: string) {
+        if (!label) { console.error('Cannot save concept without a label') }
+        (['[server]', '[client]'] as originOption[])
+            .forEach((origin) => dispatch({
+                                              type:    'begin-save',
+                                              payload: {label, src},
+                                              meta:    {origin},
+                                          } as SaveAction));
 
-    // base + params
-    const [conceptSelection, setConceptSelection] = useState<IConceptDescription>({id: null, components: []});
-    const label                                   = serializeLabelComponents(conceptSelection.components);
-    const [state, dispatch]                       = usePersistenceContext({label});
-    const save                                    = function (src: string) {
-        if (!label) {
-            console.error('Cannot save concept without a label')
-        }
-        (['[server]', '[client]'] as originOption[]).forEach(
-            (origin) => dispatch({
-                                     type:    'begin-save',
-                                     payload: {label, src},
-                                     meta:    {origin},
-                                 } as SaveAction),
-        );
-        dispatch({type: 'begin-save', payload: {label, src}, meta: {origin: '[client]'}});
-    };
-
+        label && dispatch({
+                              type:    'begin-save',
+                              payload: {label, src},
+                              meta:    {origin: '[client]'},
+                          });
+    }
     return (
         <AppWrapper className="root " style={{height: '100%'}}>
             <div className={'ConceptSelectorWrapper'}>
-                <ConceptChooser count={conceptIdCount}
-                                commitTrigger={'button'}
-                                onConceptChange={setConceptSelection}
-                                defaultComponents={defaultComponents}
-                                allowOverriddenDefaults={canOverrideDefaults}/>
+                {label && <ConceptChooser key={key}
+                                          curr={label}
+                                          onChange={l => {
+                                              if (navigateToConcept(l).reset) {
+                                                  setLabel(label)
+                                                  setKey(Date.now())
+                                              }
+                                          }}/>}
             </div>
-            <SpwClient
-                mode={mode}
-                save={save}
-                fontSize={fontSize}
-                content={state.loadedItem?.src || ''}
-                conceptSelection={conceptSelection}
-            />
+            <SpwClient mode={mode}
+                       save={save}
+                       fontSize={fontSize}
+                       content={state.loadedItem?.src || ''}
+                       label={label || ''}/>
         </AppWrapper>
     );
 }

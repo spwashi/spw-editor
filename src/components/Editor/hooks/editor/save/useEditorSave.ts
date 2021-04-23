@@ -35,7 +35,7 @@ function reducer(state: EditorDumbsaveState, action: Action) {
             return state;
     }
 }
-export function useControlledEditorSave(content: string | null, save?: EditorDumbsaveHandler): EditorDumbsaveState {
+export function useEditorSave(content: string | null, save?: EditorDumbsaveHandler): EditorDumbsaveState {
     const savekeyLastPressed = useSaveKey();
     const [state, dispatch]  = useReducer(reducer, initSaveReducerState())
     const emitCompleteEvent  = useCallback(() => dispatch({type: 'complete-save'}), [dispatch]);

@@ -107,7 +107,7 @@ export function usePersistenceContext({label}: { label?: string | null } = {}): 
             (() => {
                 const concept = getItem('[client]');
                 if (!concept) {
-                    console.error('expected a concept')
+                    console.error('expected a concept (client)')
                     return;
                 }
                 setLocalItem(label, concept);
@@ -118,7 +118,7 @@ export function usePersistenceContext({label}: { label?: string | null } = {}): 
                     if (saveLocation !== 'server') return;
                     const concept = getItem('[server]');
                     if (!concept) {
-                        console.error('expected a concept');
+                        console.error('expected a concept (server)');
                         return;
                     }
                     saveServerItem(concept)

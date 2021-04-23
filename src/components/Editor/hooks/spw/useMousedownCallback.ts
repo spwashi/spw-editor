@@ -2,7 +2,7 @@ import {Runtime} from '@spwashi/spw';
 import {useCallback, useEffect, useRef} from 'react';
 import {editor} from 'monaco-editor/esm/vs/editor/editor.api';
 
-import {findMatchingNodes} from '../util/matching/findMatchingNodes';
+import {findMatchingNodes} from './findMatchingNodes';
 
 export type IEditorMouseEvent = editor.IEditorMouseEvent;
 

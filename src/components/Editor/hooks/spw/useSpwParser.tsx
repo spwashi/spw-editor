@@ -1,18 +1,17 @@
 import {Runtime} from '@spwashi/spw/constructs/runtime/runtime';
 import {useEffect, useState} from 'react';
-import {initializeRuntime, loadConcept} from '../util/runtime/loadConcept';
-import {serializeLabelComponents} from '../../context/persistence/util/label';
-import { SpwItem } from '@spwashi/spw/constructs/ast/abstract/item';
+import {initializeRuntime, loadConcept} from '../../../SpwClient/hooks/util/runtime/loadConcept';
+import {SpwItem} from '@spwashi/spw/constructs/ast/abstract/item';
 
 /**
  * When the concept changes, parse the document and return the most current syntax tree
  *
  *
  * @param src
- * @param components
+ * @param label
  * @param trigger
  */
-export function useParser(src: string | null, components: string[], trigger?: any[]): {
+export function useSpwParser(src: string | null, label: string = '[none]', trigger?: any[]): {
     runtime?: Runtime;
     tree: SpwItem | SpwItem[];
     ast: SpwItem | SpwItem[];
@@ -39,8 +38,7 @@ export function useParser(src: string | null, components: string[], trigger?: an
                 if (!src) return {};
                 const _runtime = initializeRuntime();
                 try {
-                    const label = serializeLabelComponents(components);
-                    const _ast  = await loadConcept({label, src}, _runtime) as unknown as SpwItem | SpwItem[];
+                    const _ast = await loadConcept({label, src}, _runtime) as unknown as SpwItem | SpwItem[];
                     setHasError(false);
                     return {
                         ast:     _ast,

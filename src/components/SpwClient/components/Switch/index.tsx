@@ -7,7 +7,7 @@ interface BodyParams {
     tree: TreeComponentConfig | undefined;
 }
 
-export default function Index({editor, tree}: BodyParams) {
+export default function ComponentSwitch({editor, tree}: BodyParams) {
     const fallback = '...loading';
     const changing = false;
 
