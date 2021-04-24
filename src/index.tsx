@@ -1,4 +1,3 @@
 import React from 'react';
 
-export {SpwEditor} from './components/Editor'
-
+export {default as SpwEditor} from './components/Editor'

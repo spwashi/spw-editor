@@ -32,7 +32,7 @@ export const rules =
                      {token: 'handle', foreground: '#aaa2a2'},
                      {token: 'handle.perspective', foreground: '#d8e280'},
                      {token: 'handle.performance', foreground: '#a87a0b'},
-                     {token: 'handle.channel', foreground: '#027b3b'},
+                     {token: 'handle.channel', foreground: '#47ae76'},
                      {token: 'handle.evaluation', foreground: '#8280bd'},
                      {token: 'handle.invocation', foreground: '#0fb9b0'},
                  ];

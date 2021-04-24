@@ -1,3 +1,3 @@
-import {Editor as SpwEditor} from './Editor'
+import {SpwEditor as SpwEditor} from './SpwEditor'
 
-export {SpwEditor}
+export default SpwEditor

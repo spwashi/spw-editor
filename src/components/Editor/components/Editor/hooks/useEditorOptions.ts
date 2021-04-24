@@ -3,5 +3,5 @@ import {useMemo} from 'react';
 
 export function useEditorOptions(preferences: IEditorPreferences = {}, text: string | undefined) {
     const {w, h, options} = useMemo(() => initEditorConfig(preferences, text), [preferences, text])
-    return {w, h, options};
+    return {w, h, ...options};
 }

@@ -1,8 +1,8 @@
 // Hook
 import React, {useCallback, useEffect, useState} from 'react';
-import {SpwEditor} from '../index';
 import {initializeRuntime} from '../../SpwClient/hooks/util/runtime/loadConcept';
 import {SpwDocument} from '@spwashi/spw';
+import {SpwEditor} from './Editor/SpwEditor';
 
 type Props = { value: string, onChange: (v: string) => unknown, };
 
