@@ -13,6 +13,7 @@ export function InlineSpwEditor({value, onChange: onValueChange}: Props & { valu
     const rollback               = useCallback(() => (onValueChange(value), setInner(value)), [value, onValueChange]);
     const onBlur                 = useCallback(() => {
                                                    if (!key) return;
+                                                   console.log(key)
                                                    return key !== value && !confirm(`Confirm change to concept: ${JSON.stringify([key, value])}`)
                                                           ? rollback()
                                                           : commit();

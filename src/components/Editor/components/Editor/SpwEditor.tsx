@@ -1,52 +1,38 @@
-import React from 'react';
-import {default as MonacoEditor} from '@monaco-editor/react';
-import {IEditorPreferences} from '../../util/initEditorConfig';
+import React, {useMemo, useState} from 'react';
+import {default as MonacoEditor, EditorProps} from '@monaco-editor/react';
 import {editor} from 'monaco-editor/esm/vs/editor/editor.api';
-import {VimBar} from './components/VimBar';
-import {EditorDumbsaveHandler, useEditorSave} from '../../hooks/editor/save/useEditorSave';
-import {BlurHandler, useMonacoEditorInstance} from './hooks/useMonacoEditorInstance';
-import {useMonacoOnInit} from './hooks/useMonaco';
-import {ErrorBoundary} from './components/Error';
-import {useEditorOptions} from './hooks/useEditorOptions';
-import {useSpwParser} from '../../hooks/spw/useSpwParser';
-import {useMousedownCallback} from '../../hooks/spw/useMousedownCallback';
-import ReactJson from 'react-json-view';
-import {useKeydownCallback} from './useKeydownCallback';
+import {VimBar} from './components/vim/VimBar';
+import {useEditorSave} from '../../hooks/editor/save/useEditorSave';
+import {useMonacoEditorTab} from './hooks/useMonacoEditorTab';
+import {useKeydownCallback} from './hooks/callbacks/useKeydownCallback';
+import {SpwParserContextConsumer, SpwParserContextProvider, useSpwMonacoPlugin} from './hooks/spw/SpwParserContext';
+import {EditorContainer, useEditorContainerDivProps} from './components/Container';
+import {SpwEditorProps} from './types';
+import {Config} from './global.editor';
+import {useBlurCallback} from './hooks/callbacks/useBlurCallback';
+import {initEditorConfig} from '../../util/initEditorConfig';
+import {useEditorBlurCommand} from './hooks/useEditorBlurCommand';
+import {ErrorAlert} from './components/error/ErrorAlert';
+import {createReducerContext} from '../../../../util/ReducerContext';
 
 type IStandaloneCodeEditor = editor.IStandaloneCodeEditor;
-type IEditorMouseEvent = editor.IEditorMouseEvent;
 
-type ContentSource =
-    {
-        content: string
-        document?: undefined;
-        children?: undefined;
-    } | {
-        document: {
-            id: string,
-            content: string
-        }
-        content?: undefined;
-        children?: undefined;
-    } | {
-        content?: undefined;
-        document?: undefined;
-        children: string
-    };
-export type EditorProps =
-    {
-        inline?: boolean;
-        enableVim?: boolean;
-        preferences?: IEditorPreferences;
-        events?: {
-            onMouseDown?: (e: IEditorMouseEvent) => void,
-            onChange?: (text: string) => void | unknown;
-            onBlur?: BlurHandler;
-            onSave?: EditorDumbsaveHandler;
-        }
-    } & (ContentSource);
 
-function useProperties(properties: EditorProps) {
+function useEditorJunction(config: Pick<Config, 'preferences' | 'content' | 'events'>): [IStandaloneCodeEditor | null, EditorProps] {
+    const [editor, setEditor] = useState<IStandaloneCodeEditor | null>(null);
+
+    const preferences                    = config.preferences || {};
+    const text                           = config.content;
+    const {w: width, h: height, options} = useMemo(() => initEditorConfig(preferences, text), [preferences, text])
+
+    const onChange = (s: string | undefined) => !(!s && s !== '') && config.events.onChange?.(s);
+    const onMount  = (e: editor.IStandaloneCodeEditor) => setEditor(e as IStandaloneCodeEditor);
+    const value    = text || '';
+
+    return [editor, {options, onChange, onMount, value, width, height}];
+}
+
+const initState     = (properties: SpwEditorProps) => {
     const {
               inline,
               events = {},
@@ -56,79 +42,84 @@ function useProperties(properties: EditorProps) {
               children,
               document:
                   {
-                      id,
+                      id:      id,
                       content: d_content = '',
                   }  = {
-                      hash:    '[none]',
+                      id:      '[none]',
                       content: '',
                   },
 
-          }       = properties;
+          } = properties || {};
+
     const content = d_content || _content || children || '';
     return {inline, events, preferences, enableVim, id, content};
-}
-/**
- * Editor for the Spw Programming Language.
- *
- */
-export function SpwEditor(properties: EditorProps) {
-    const config              = useProperties(properties);
-    const {theme}             = useMonacoOnInit();
-    const parsed              = useSpwParser(config.content, config.id, [config.content]);
-    const onBlur              = config.events.onBlur;
-    const onMouseDown         = useMousedownCallback(parsed.runtime);
-    const onKeyDown           = useKeydownCallback(config.inline);
-    const [editor, setEditor] = useMonacoEditorInstance({onMouseDown, onKeyDown, onBlur});
-    const saveStatus          = useEditorSave(config.content, config.events.onSave);
-    const options             = useEditorOptions(config.preferences, config.content);
-    const color               = saveStatus.currentSave ? 'yellow' : parsed.error ? '#2b0000' : 'black';
-    const isFullscreen        = properties.preferences?.size?.fullScreen;
+};
+const ConfigContext = createReducerContext((s: Config, action?: { type: 'toggle-vim' }) => {
+                                               switch (action?.type) {
+                                                   case 'toggle-vim':
+                                                       return {
+                                                           ...s,
+                                                           enableVim: !s.enableVim,
+                                                       }
+                                               }
+                                               return s;
+                                           },
+                                           initState,
+                                           initState)
+
+function Menu({config, dispatch}: { config: Config, dispatch: any }) {
+    const inline    = config.inline;
+    const toggleVim = () => dispatch({type: 'toggle-vim'});
+    const vim       = +(config.enableVim || 0);
     return (
-        <ErrorBoundary>
-            <div style={isFullscreen ? {
-                position: 'absolute',
-                width:    '100%',
-                height:   '100%',
-                overflow: 'hidden',
-                top:      0,
-            } : {width: '100%', height: '100%'}}>
-                <MonacoEditor language="spw"
-                              defaultLanguage="spw"
-                              theme={theme}
-                              value={config.content || ''}
-                              onChange={s => config.events.onChange?.(typeof s === 'string' ? s : JSON.stringify(s))}
-                              onMount={e => setEditor(e as IStandaloneCodeEditor)}
-                              width={options.w}
-                              height={options.h}
-                              options={options}/>
-                {config.enableVim && <VimBar editor={editor}/>}
-                {
-                    parsed.error && (
-                        <div className={'error'}
-                             style={{
-                                 background: 'whitesmoke',
-                                 border:     'thick solid ' + color,
-                                 position:   'absolute',
-                                 bottom:     0,
-                                 right:      0,
-                                 zIndex:     1,
-                             }}>
-                            <div className={'title'}
-                                 style={{
-                                     background: color,
-                                     color:      'whitesmoke',
-                                     padding:    '.5rem',
-                                     fontSize:   '1.5rem',
-                                     zIndex:     1,
-                                 }}>Error
-                            </div>
-                            <div className="content">
-                                <pre style={{fontSize: '1rem'}}><ReactJson src={parsed.error}/></pre>
-                            </div>
-                        </div>
-                    )
-                }
+        <div className="config" style={{position: 'absolute', top: 0, right: 0, zIndex: 1}}>
+            <div>
+                {!inline && <button onClick={toggleVim}>{['enable', 'disable'][vim]} vim</button>}
             </div>
-        </ErrorBoundary>
+        </div>
+    );
+}
+type SpwPluginProps = { editor: editor.IStandaloneCodeEditor | null, content: string, tabName: string };
+function SpwPlugin({editor, content, tabName}: SpwPluginProps) {
+    useSpwMonacoPlugin(editor, content, tabName);
+    return <SpwParserContextConsumer>{value => <ErrorAlert error={value.error}/>}</SpwParserContextConsumer>;
+}
+function Internal<S>({config, dispatch}: { config: Config, dispatch: any }) {
+    let containerProps;
+    const tabName               = '[none]';
+    const content               = config.content;
+    const events                = config.events || {};
+    const preferences           = config.preferences;
+    const [editor, editorProps] = useEditorJunction({preferences, content, events});
+    const inline                = config.inline;
+    const {onBlur, onSave}      = events;
+
+    useKeydownCallback(editor, inline);
+    useEditorBlurCommand(editor);
+    useBlurCallback(editor, () => dispatch({type: 'blur', payload: Date.now()}));
+
+    const saveState = useEditorSave(content, onSave);
+    const viewState = useMonacoEditorTab(editor, tabName);
+    containerProps  = useEditorContainerDivProps(preferences, {saveState, viewState});
+
+    const vim = !config.inline && config.enableVim;
+
+    if (!config) return null;
+    return (
+        <EditorContainer {...containerProps}>
+            <MonacoEditor theme={'spw-dark'} language={'spw'} {...editorProps}/>
+            <VimBar editor={editor} enabled={!!vim}/>
+            <Menu config={config} dispatch={dispatch}/>
+            <SpwPlugin editor={editor} content={content} tabName={tabName}/>
+        </EditorContainer>
+    );
+}
+export function SpwEditor(properties: SpwEditorProps) {
+    return (
+        <SpwParserContextProvider>
+            <ConfigContext.Provider value={properties}>
+                <ConfigContext.Consumer children={([c, d]) => <Internal config={c} dispatch={d}/>}/>
+            </ConfigContext.Provider>
+        </SpwParserContextProvider>
     );
 }

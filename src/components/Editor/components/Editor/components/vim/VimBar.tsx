@@ -1,5 +1,5 @@
-import React, {MutableRefObject, useRef, useState} from 'react';
-import {useVimMode} from '../../../hooks/editor/useVimMode';
+import React, {MutableRefObject, useRef} from 'react';
+import {useVimMode} from './hooks/useVimMode';
 import {editor as nsEditor} from 'monaco-editor/esm/vs/editor/editor.api';
 import styled from 'styled-components';
 import classNames from 'classnames';
@@ -29,14 +29,12 @@ const VimBarWrapper =
               }
           `;
 
-export function VimBar({editor}: { editor?: Editor | null }) {
-    const [enabled, setEnabled] = useState(true);
-
+export function VimBar({editor, enabled = true}: { editor?: Editor | null, enabled?: boolean | undefined }) {
     const vimBar = useRef() as MutableRefObject<HTMLDivElement>;
     useVimMode({editor, el: vimBar.current, enabled});
+    if (!enabled) return null;
     return (
         <VimBarWrapper className={classNames({enabled})}>
-            <button onClick={() => setEnabled(!enabled)}>{'[toggle vim]'}</button>
             <div ref={vimBar}/>
         </VimBarWrapper>
     )

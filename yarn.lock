@@ -1227,6 +1227,14 @@
     tslib "^2.1.0"
     typescript "^3.9.7"
 
+"@spwashi/react-utils-dom@^0.0.7":
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/@spwashi/react-utils-dom/-/react-utils-dom-0.0.7.tgz#fcfe26ac22907989d2ba8fd090b990d6ce1a65f0"
+  integrity sha512-by45Gxwy+3tc/+gB9FtfQ1ozu0NDA1bJCMSKy3dH2nM3aIFa+E75SO5yWvwjw0RZCPGdZuze0vufL/5wAOi0FA==
+  dependencies:
+    react "^17.0.2"
+    typescript "^4.2.4"
+
 "@spwashi/spw@^0.1.6":
   version "0.1.6"
   resolved "https://registry.yarnpkg.com/@spwashi/spw/-/spw-0.1.6.tgz#217effb6e435ba590026dac40c5d8aa109f08483"
@@ -6274,7 +6282,7 @@ react-base16-styling@^0.6.0:
     lodash.flow "^3.3.0"
     pure-color "^1.2.0"
 
-react-dom@^17.0.1:
+react-dom@^17.0.2:
   version "17.0.2"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-17.0.2.tgz#ecffb6845e3ad8dbfcdc498f0d0a939736502c23"
   integrity sha512-s4h96KtLDUQlsENhMn1ar8t2bEa+q/YAtj8pPPdIjPDGBDIVNsrD9aXNWqspUe6AzKCIG0C1HZZLqLV7qpOBGA==
@@ -6376,7 +6384,7 @@ react-textarea-autosize@^8.3.2:
     use-composed-ref "^1.0.0"
     use-latest "^1.0.0"
 
-react@^17.0.1:
+react@^17.0.2:
   version "17.0.2"
   resolved "https://registry.yarnpkg.com/react/-/react-17.0.2.tgz#d0b5cc516d29eb3eee383f75b62864cfb6800037"
   integrity sha512-gnhPt75i/dq/z3/6q/0asP78D0u592D5L1pd7M8P+dck6Fu/jJeL6iVVK23fptSUZj8Vjf++7wXA8UNclGQcbA==

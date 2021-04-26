@@ -9,7 +9,11 @@ type VimModeState = any;
 export function useVimMode({editor, el, enabled}: VimModeParams) {
     const vimModeRef: VimModeState = useRef<VimModeState>();
 
-    const dispose = () => { vimModeRef.current?.dispose(); };
+    const dispose = () => {
+        const current = vimModeRef.current;
+        current?.dispose();
+        vimModeRef.current = null;
+    };
 
     useEffect(
         () => {
@@ -18,7 +22,16 @@ export function useVimMode({editor, el, enabled}: VimModeParams) {
                 return;
             }
 
-            if (el && editor) vimModeRef.current = initVimMode(editor, el);
+            if (el && editor) {
+                try {
+                    vimModeRef.current = initVimMode(editor, el);
+                } catch (e) {
+                    console.error(e);
+                }
+            } else {
+                dispose();
+                return;
+            }
 
             return dispose
         },

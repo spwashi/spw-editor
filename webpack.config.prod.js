@@ -5,7 +5,7 @@ const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 const MonacoWebpackPlugin  = require('monaco-editor-webpack-plugin');
 const webpack              = require("webpack");
 
-const doAnalyze = true;
+const doAnalyze = false;
 const plugins   = [
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({template: path.resolve(__dirname, 'src/assets/index.html')}),

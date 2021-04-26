@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import ComponentSwitch from './components/Switch';
 import {EditorMode, StandardEditorParams} from './types';
 import {TreeComponentConfig} from './components/Switch/Tree';
-import {EditorProps} from '../Editor/components/Editor/SpwEditor';
+import {SpwEditorProps} from '../Editor/components/Editor/types';
 
 /**
  * A text editor with externally defined state controllers
@@ -22,8 +22,8 @@ export function SpwClient(params: StandardEditorParams & { mode: EditorMode, lab
     const fullScreen                      = false;
     useEffect(() => { setInnerContent(outerContent); }, [outerContent])
 
-    const treeConfig: TreeComponentConfig | undefined = (!mode || (mode === 'tree')) ? {content: innerContent} : undefined;
-    const editorConfig: EditorProps | undefined       =
+    const treeConfig: TreeComponentConfig | undefined = ((mode === 'tree')) ? {content: innerContent} : undefined;
+    const editorConfig: SpwEditorProps | undefined    =
               (!mode || (mode === 'editor')) ? {
                   document:    {
                       id:      label,

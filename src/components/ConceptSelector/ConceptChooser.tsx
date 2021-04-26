@@ -1,7 +1,6 @@
 import React, {useEffect} from 'react';
 import {InlineSpwEditor} from '../Editor/components/InlineSpwEditor';
-import {useLocalStorage} from '../../hooks/useLocalStorage';
-
+import {useLocalStorage} from '@spwashi/react-utils-dom'
 
 export interface ConceptChooserProps {
     curr: string | null

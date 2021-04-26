@@ -1,6 +1,6 @@
 import React from 'react';
 
-export class ErrorBoundary extends React.Component {
+export class ParserErrorBoundary extends React.Component {
     state = {hasError: false};
 
     constructor(props: {}) {
@@ -10,7 +10,9 @@ export class ErrorBoundary extends React.Component {
 
     static getDerivedStateFromError(error: Error | unknown) {
         // Update state so the next render will show the fallback UI.
-        return {hasError: true};
+        return {
+            hasError: true,
+        };
     }
 
     componentDidCatch(error: Error | unknown, errorInfo: unknown) {

@@ -5,7 +5,7 @@ import {ConceptChooser} from '../../components/ConceptSelector/ConceptChooser';
 import {usePersistenceContext} from '../../components/SpwClient/context/persistence/context';
 import {SpwClient} from '../../components/SpwClient/SpwClient';
 import styled from 'styled-components';
-import {useLocalStorage} from '../../hooks/useLocalStorage';
+import {useLocalStorage} from '@spwashi/react-utils-dom'
 import {useSaveCallback} from '../../components/SpwClient/context/persistence/hooks/useSaveCallback';
 import {useDropzone} from 'react-dropzone';
 
@@ -68,7 +68,7 @@ export function EditorClientRouteComponent() {
         setLabel(label);
         if (hash === specifiedHash) return;
         setHash(hash || null);
-        history.push(`/${hash || ''}`);
+        history.push(`/${hash || ''}${window.location.search.substring(1) || ''}`);
     }, [loadedItem, history]);
 
     const loadedHash = loadedItem?.hash;
@@ -76,14 +76,19 @@ export function EditorClientRouteComponent() {
 
     const {getRootProps, isDragActive} = useSpwDropzone(loadedHash);
 
+    const rootStyle = {height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column'};
     return (
-        <AppWrapper className="root " style={{height: '100%', overflow: 'hidden'}}>
+        <AppWrapper className="root " style={rootStyle as any}>
             <div className={'ConceptSelectorWrapper'}>
                 <ConceptChooser curr={specifiedLabel} onChange={l => { setLabel(l) }}/>
             </div>
             <div {...getRootProps()}
+                 tabIndex={-1}
                  style={
-                     {height: '100%', border: 'thick solid ' + (isDragActive ? 'yellow' : 'transparent')}
+                     {
+                         flex:   '1 1 100%',
+                         border: `thick solid ${isDragActive ? 'yellow' : 'transparent'}`,
+                     }
                  }>
                 <SpwClient key={loadedHash}
                            mode={mode}
