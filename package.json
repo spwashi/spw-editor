@@ -1,14 +1,11 @@
 {
   "name": "@spwashi/spw-editor",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "repository": {
     "url": "https://github.com/spwashi/spw-editor"
   },
   "license": "MIT",
   "author": "Sam Washington",
-  "files": [
-    "."
-  ],
   "keywords": [
     "spw",
     "spw-lang",
