@@ -1,6 +1,6 @@
 {
   "name": "@spwashi/spw-editor",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "repository": {
     "url": "https://github.com/spwashi/spw-editor"
   },
@@ -20,7 +20,7 @@
     "serve": "serve -s out/",
     "dev": "webpack serve --port 3005",
     "tsc": "node ./node_modules/ttypescript/bin/tsc && ./node_modules/@babel/cli/bin/babel.js dist -d dist",
-    "copyenter:dist": "cp -rf package.json dist; cd dist",
+    "src:prepublish": "cp -rf package.json dist; cp -rf .npmignore dist;",
     "postpublish": "cd dist || true; cp -rf package.json ../"
   },
   "dependencies": {
