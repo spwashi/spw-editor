@@ -16,6 +16,10 @@ type AppRouteParams = { hash: string };
 const AppWrapper =
           styled.div`
               font-family: 'JetBrains Mono', monospace;
+              height: 100vh;
+              width: 100%;
+              display: flex;
+              flex-direction: column;
               background: #1c2024;
 
               .ConceptSelectorWrapper {
@@ -86,20 +90,17 @@ export function EditorClientRouteComponent() {
 
     const {getRootProps, isDragActive} = useSpwDropzone(loadedHash);
 
-    const rootStyle = {height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column'};
     return (
-        <AppWrapper className="root " style={rootStyle as any}>
-            <div className={'ConceptSelectorWrapper'}>
+        <AppWrapper className="SpwEditor--AppRoot">
+            <div className={'ConceptSelector--Wrapper'}>
                 <ConceptChooser curr={specifiedLabel} onChange={l => { setLabel(l) }}/>
             </div>
             <div {...getRootProps()}
                  tabIndex={-1}
-                 style={
-                     {
-                         flex:   '1 1 100%',
-                         border: `thick solid ${isDragActive ? 'yellow' : 'transparent'}`,
-                     }
-                 }>
+                 style={{
+                     flex:   '1 1 100%',
+                     border: `thick solid ${isDragActive ? 'yellow' : 'transparent'}`,
+                 }}>
                 <SpwClient key={loadedHash}
                            mode={mode}
                            save={save}
