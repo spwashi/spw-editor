@@ -1,5 +1,5 @@
 import {useSaveKey} from './useSaveKey';
-import {useCallback, useReducer} from 'react';
+import {useCallback, useReducer, useRef} from 'react';
 import {useDidMountEffect} from '../../../../../hooks/useDidMountEffect';
 
 
@@ -35,11 +35,17 @@ function reducer(state: EditorDumbsaveState, action: Action) {
             return state;
     }
 }
+function useContentRef(content: string | null) {
+    const contentRef   = useRef(content);
+    contentRef.current = content;
+    return contentRef;
+}
 export function useEditorSave(content: string | null, save?: EditorDumbsaveHandler): EditorDumbsaveState {
     const savekeyLastPressed = useSaveKey();
     const [state, dispatch]  = useReducer(reducer, initSaveReducerState())
     const emitCompleteEvent  = useCallback(() => dispatch({type: 'complete-save'}), [dispatch]);
-    const initiateSave       = () => save ? save(`${content}`) : null;
+    const contentRef         = useContentRef(content);
+    const initiateSave       = () => save ? save(`${contentRef.current}`) : null;
 
     // effects
     useDidMountEffect(() => { dispatch({type: 'begin-save'}) }, [savekeyLastPressed]);
@@ -47,7 +53,9 @@ export function useEditorSave(content: string | null, save?: EditorDumbsaveHandl
         if (!state.currentSave) return;
         let cancelled = false;
         Promise.resolve(initiateSave()).then(emitCompleteEvent);
-        return () => { cancelled = true; };
+        return () => {
+            cancelled = true;
+        };
     }, [state.currentSave, emitCompleteEvent]);
 
     return state;

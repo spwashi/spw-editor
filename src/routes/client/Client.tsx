@@ -49,6 +49,11 @@ function useSpwDropzone(loadedHash: string | undefined) {
     const {getRootProps, isDragActive} = useDropzone({onDrop})
     return {getRootProps, isDragActive};
 }
+function useMounted() {
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => setMounted(true), [])
+    return mounted;
+}
 export function EditorClientRouteComponent() {
     const urlParams                  = useQuery();
     const fontSize                   = useFontSize();
@@ -61,15 +66,20 @@ export function EditorClientRouteComponent() {
     const save                       = useSaveCallback({label: specifiedLabel, hash: specifiedHash}, dispatch);
     const loadedItem                 = state.loadedItem?.['[server]']?.item;
     const history                    = useHistory();
+    const mounted                    = useMounted();
     useEffect(() => { setHash(_hash) }, [_hash])
     useEffect(() => {
-        if (!loadedItem) return;
+        if (!mounted) return;
+        if (!loadedItem) {
+            history.push(`/?${window.location.search.substring(1) || ''}`);
+            return;
+        }
         const {label, hash} = loadedItem;
         setLabel(label);
         if (hash === specifiedHash) return;
         setHash(hash || null);
-        history.push(`/${hash || ''}${window.location.search.substring(1) || ''}`);
-    }, [loadedItem, history]);
+        history.push(`/${hash || ''}?${window.location.search.substring(1) || ''}`);
+    }, [loadedItem, history, mounted]);
 
     const loadedHash = loadedItem?.hash;
     const src        = loadedItem?.src || '';

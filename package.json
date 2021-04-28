@@ -33,7 +33,7 @@
     "@hot-loader/react-dom": "^17.0.1",
     "@monaco-editor/react": "^4.1.2",
     "@spwashi/react-utils-dom": "^0.0.7",
-    "@spwashi/spw": "^0.1.6",
+    "@spwashi/spw": "^0.1.7",
     "@types/dedent": "^0.7.0",
     "@types/react-router": "^5.1.12",
     "@types/react-router-dom": "^5.1.7",

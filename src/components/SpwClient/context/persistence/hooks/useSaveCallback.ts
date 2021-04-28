@@ -15,7 +15,13 @@ type PartialSpwConcept =
 export function useSaveCallback(concept: PartialSpwConcept | null, dispatch: ISpwServiceDispatch) {
     const {label, hash} = concept || {};
     return useCallback(function save(src: string) {
-        if (!label) return;
+        if (!label) {
+            alert('Not saving an unlabeled concept')
+            return;
+        }
+        if(!src) {
+            alert('saving an empty concept')
+        }
         (['[server]', '[client]'] as originOption[])
             .forEach((origin) => dispatch({
                                               type:       'begin-save',

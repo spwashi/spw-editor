@@ -12,11 +12,10 @@ export function InlineSpwEditor({value, onChange: onValueChange}: Props & { valu
     const commit                 = useCallback(() => onValueChange(key || pendingVal), [onValueChange, key, pendingVal]);
     const rollback               = useCallback(() => (onValueChange(value), setInner(value)), [value, onValueChange]);
     const onBlur                 = useCallback(() => {
-                                                   if (!key) return;
-                                                   console.log(key)
-                                                   return key !== value && !confirm(`Confirm change to concept: ${JSON.stringify([key, value])}`)
-                                                          ? rollback()
-                                                          : commit();
+                                                   const doConfirm = false;
+                                                   return key !== value && (!doConfirm ? true : confirm(`Confirm change to concept: ${JSON.stringify([key, value])}`))
+                                                          ? commit()
+                                                          : rollback();
                                                },
                                                [commit, rollback, pendingVal, value, key]);
     useEffect(() => { if (value !== pendingVal) { setInner(value); } }, [value])
@@ -25,7 +24,6 @@ export function InlineSpwEditor({value, onChange: onValueChange}: Props & { valu
             const _runtime = initializeRuntime();
             _runtime.loadDocument(new SpwDocument('editor.concept', `${pendingVal}`));
             const key = _runtime.registers?.lastAcknowledged?.entries[0].item.key;
-            console.log(key)
             setParsed(key ? `${key}` : false)
         } catch (e) {
             setParsed(false)
@@ -54,7 +52,11 @@ export function InlineSpwEditor({value, onChange: onValueChange}: Props & { valu
                                padding:              {top: 0, bottom: 0},
                                overviewRulerLanes:   0,
                            }}
-                           events={{onChange: t => setInner(t.replace(/\n/g, ' ')), onBlur}}>
+                           events={{
+                               onChange(t) {
+                                   return setInner(t.replace(/\n/g, ' '));
+                               }, onBlur,
+                           }}>
                     {`${pendingVal}`}
                 </SpwEditor>
             </div>

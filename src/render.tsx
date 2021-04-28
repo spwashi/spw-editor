@@ -1,5 +1,5 @@
 import React from 'react';
-import App from './Hot';
+import App from './components/Hot';
 import ReactDOM from 'react-dom';
 
 render(App);
@@ -12,7 +12,7 @@ function render(Component = App) {
 if (module.hot) {
     module.hot.accept('./App',
                       () => {
-                          const NewApp = require('./App').default;
+                          const NewApp = require('./components/App').default;
                           render(NewApp)
                       })
 }

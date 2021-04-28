@@ -19,7 +19,8 @@ export function SpwClient(params: StandardEditorParams & { mode: EditorMode, lab
           } = params;
 
     const [innerContent, setInnerContent] = useState<string | null>(outerContent);
-    const fullScreen                      = false;
+
+    const fullScreen = false;
     useEffect(() => { setInnerContent(outerContent); }, [outerContent])
 
     const treeConfig: TreeComponentConfig | undefined = ((mode === 'tree')) ? {content: innerContent} : undefined;

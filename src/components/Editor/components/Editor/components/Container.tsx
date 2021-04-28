@@ -12,6 +12,6 @@ export const EditorContainer = styled.div<EditorContainerProps>`
     overflow: hidden;
     top: ${p => p.fullScreen ? 0 : undefined};
 `
-export function useEditorContainerDivProps(preferences: Config['preferences'], p: { saveState: EditorDumbsaveState; viewState: editor.ICodeEditorViewState | null }) {
+export function useEditorWrapperProps(preferences: Config['preferences'], p: { saveState: EditorDumbsaveState; viewState: editor.ICodeEditorViewState | null }) {
     return useMemo(() => ({fullScreen: !!preferences?.size?.fullScreen}), [preferences?.size]);
 }

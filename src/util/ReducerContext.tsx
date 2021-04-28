@@ -10,7 +10,7 @@ type ConsumerProps<R> = { children: (params: [StateType<R>, (action: ActionType<
 type Context<R> = { Provider: FC<ProviderProps<R>>, Consumer: FC<ConsumerProps<R>> };
 type StateInitializer<R> = (p?: ProviderProps<R>) => StateType<R>;
 type StateModifier<R> = (s: StateType<R>, p?: Omit<ProviderProps<R>, 'children'>) => StateType<R>;
-export function createReducerContext<R extends Reducer<S, A> = any, S = any, A extends { type: string, payload?: any } = any, P = any>(reducer: R, initState: StateInitializer<R>, updateState?: StateModifier<R>): Context<R> {
+export function createReducerContext<R extends Reducer<S, A> = any, S extends { _$events?: A[], [k: string]: any } = any, A extends { type: string, payload?: any } = any, P = any>(reducer: R, initState: StateInitializer<R>, updateState?: StateModifier<R>): Context<R> {
     type Action = ActionType<R>;
     type State = StateType<R>;
     type Dispatch = { (action: Action): any }
@@ -18,9 +18,16 @@ export function createReducerContext<R extends Reducer<S, A> = any, S = any, A e
     const DispatchContext = createContext<Dispatch>((a: Action) => {});
 
     const wrappedReducer = (s: S, a: A) => {
+        if (a?.type === '$$update$$') return a.payload;
+
+        if (Array.isArray(s?._$events)) {
+            s._$events = [a, ...s._$events];
+        }
+
         switch (a?.type) {
-            case '$$update$$':
-                return a.payload;
+            default:
+                const b = s as any;
+                (b._$actions = b._$actions || []).push()
         }
         return reducer(s, a);
     }
