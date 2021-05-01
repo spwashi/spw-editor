@@ -1,10 +1,9 @@
 import {useEffect, useState} from 'react';
-import {useMonaco} from '@monaco-editor/react';
 import {initSpwTheme} from '../../../../util/spw/monaco/initSpwTheme';
+import {Monaco} from '../../../../types';
 
-export function useSpwTheme() {
+export function useSpwTheme(monaco: Monaco) {
     const [themeName, setTheme] = useState('vs-dark');
-    const monaco                = useMonaco();
     useEffect(() => { monaco && setTheme(initSpwTheme(monaco).themeName) }, [monaco]);
-    return {theme: themeName, language: 'spw'};
+    return {theme: themeName, language: themeName ? 'spw' : null};
 }

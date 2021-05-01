@@ -93,7 +93,7 @@ export function EditorClientRouteComponent() {
     return (
         <AppWrapper className="SpwEditor--AppRoot">
             <div className={'ConceptSelector--Wrapper'}>
-                <ConceptChooser curr={specifiedLabel} onChange={l => { setLabel(l) }}/>
+                <ConceptChooser value={specifiedLabel} onChange={l => { setLabel(l) }}/>
             </div>
             <div {...getRootProps()}
                  tabIndex={-1}

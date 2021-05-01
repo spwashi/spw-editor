@@ -1,20 +1,20 @@
 import React, {memo, useEffect, useMemo, useState} from 'react';
 import {default as MonacoEditor, EditorProps} from '@monaco-editor/react';
 import {editor} from 'monaco-editor/esm/vs/editor/editor.api';
-import {VimBar} from './components/vim/VimBar';
+import {MonacoVimBar} from './components/vim/MonacoVimBar';
 import {useEditorSave} from '../../hooks/editor/save/useEditorSave';
-import {useTabName} from './hooks/monaco/useTabName';
+import {useEditorViewState} from './hooks/monaco/useEditorViewState';
 import {useKeydownCallback} from './hooks/monaco/callbacks/useKeydownCallback';
-import {SpwParserContextConsumer, SpwParserContextProvider} from '../../../Spw/context/parsing/SpwParserContext';
 import {EditorContainer, useEditorWrapperProps} from './components/Container';
 import {SpwEditorProps} from './constants/types';
 import {Config} from './constants/global.editor';
 import {useBlurListener} from './hooks/monaco/listeners/useBlurListener';
 import {initEditorConfig} from '../../util/initEditorConfig';
 import {useEditorBlurCommand} from './hooks/useEditorBlurCommand';
-import {ErrorAlert} from './components/error/ErrorAlert';
-import {createReducerContext} from '../../../../util/ReducerContext';
-import {useSpwMonacoPlugin} from '../../../Spw/hooks/monaco/plugins/useSpwMonacoPlugin';
+import {SpwMonacoPlugin} from '../../../Spw/components/SpwMonacoPlugin';
+import {EditorConfigContext} from '../../context/config/context';
+import {SpwParserContextProvider} from '../../../Spw/context/parsing/SpwParserContext';
+import {useReducerContext} from '../../../../util/ReducerContext';
 
 type IStandaloneCodeEditor = editor.IStandaloneCodeEditor;
 
@@ -33,58 +33,9 @@ function useEditorJunction(config: Pick<Config, 'preferences' | 'content' | 'eve
     return [editor, {options, onChange, onMount, value, width, height}];
 }
 
-type SpwEditorContainerState = { config: Config, _$events?: any[] };
-const initState     = (properties: SpwEditorProps): SpwEditorContainerState => {
-    const {
-              inline,
-              events = {},
-              preferences,
-              enableVim,
-              content: _content,
-              children,
-              document:
-                  {
-                      id:      id,
-                      content: d_content = '',
-                  }  = {
-                      id:      '[none]',
-                      content: '',
-                  },
+function EditorConfigMenu() {
+    const [{config}, dispatch] = useReducerContext(EditorConfigContext)
 
-          } = properties || {};
-
-    const content = d_content || _content || children || '';
-    return {
-        config:   {inline, events, preferences, enableVim, id, content},
-        _$events: [],
-    };
-};
-const ConfigContext =
-          createReducerContext(
-              (s: SpwEditorContainerState, action?: { type: 'toggle-vim' }) => {
-                  switch (action?.type) {
-                      case 'toggle-vim':
-                          Object.assign(s.config, {enableVim: !s.config.enableVim})
-                          return s
-                  }
-                  return s;
-              },
-              initState,
-              (s, p) => {
-                  const o = initState(p as SpwEditorProps);
-                  return p ? Object.assign(s,
-                                           o,
-                                           {
-                                               ...s,
-                                               config: {
-                                                   ...s.config,
-                                                   events: o.config.events,
-                                               },
-                                           }) : s;
-              },
-          );
-
-function Menu({config, dispatch}: { config: Config, dispatch: any }) {
     const inline    = config.inline;
     const toggleVim = () => dispatch({type: 'toggle-vim'});
     const vim       = +(config.enableVim || 0);
@@ -95,11 +46,6 @@ function Menu({config, dispatch}: { config: Config, dispatch: any }) {
             </div>
         </div>
     );
-}
-type SpwPluginProps = { editor: editor.IStandaloneCodeEditor | null, content: string, tabName: string };
-function SpwPlugin({editor, content, tabName}: SpwPluginProps) {
-    useSpwMonacoPlugin(editor, content, tabName);
-    return <SpwParserContextConsumer>{([value]) => <ErrorAlert error={value.error}/>}</SpwParserContextConsumer>;
 }
 function useInnerContent(external: string): [string, (s: string) => any] {
     return useState(external)
@@ -115,9 +61,7 @@ const Internal = memo(<S extends any>({
     const preferences     = config.preferences;
 
     const [editor, editorProps]       = useEditorJunction({preferences, content: externalContent, events});
-    const inline                      = config.inline;
     const [innerContent, updateInner] = useInnerContent(externalContent);
-
 
     useEffect(() => {
         const action = _$events?.[0];
@@ -128,45 +72,50 @@ const Internal = memo(<S extends any>({
                 break;
         }
     }, [_$events]);
-
-    useKeydownCallback(editor, inline);
+    useKeydownCallback(editor);
     useEditorBlurCommand(editor);
     useBlurListener(editor, () => dispatch({type: 'blur', payload: new Date().toLocaleString()}));
-    useEffect(
-        () => {
-            if (!editor) return;
-            const d = editor.onDidChangeModelContent(e => {
-                const value = editor.getValue();
-                updateInner(value);
-                events.onChange && events.onChange(value)
-            })
-            return () => d?.dispose()
-        }, [editor, events.onChange, updateInner],
-    );
+    useEffect(() => {
+                  if (!editor) return;
+                  const d = editor.onDidChangeModelContent(e => {
+                      const value = editor.getValue();
+                      updateInner(value);
+                      events.onChange && events.onChange(value)
+                  })
+                  return () => d?.dispose()
+              },
+              [editor, events.onChange, updateInner]);
 
-    const tabName      = '[none]';
-    const saveState    = useEditorSave(innerContent, events.onSave);
-    const viewState    = useTabName(editor, tabName);
-    const wrapperProps = useEditorWrapperProps(preferences, {saveState, viewState});
-    const vim          = !config.inline && config.enableVim;
+    const tabName = '[none]';
+    useEditorSave(innerContent, events.onSave);
+    useEditorViewState(editor, tabName);
 
+    const wrapperProps = useEditorWrapperProps();
     if (!config) return null;
+
+    const vim = !config.inline && config.enableVim;
     return (
         <EditorContainer {...wrapperProps}>
             <MonacoEditor theme={'spw-dark'} language={'spw'} {...editorProps}/>
-            <VimBar editor={editor} enabled={vim}/>
-            <Menu config={config} dispatch={dispatch}/>
-            <SpwPlugin editor={editor} content={innerContent} tabName={tabName}/>
+            <MonacoVimBar editor={editor}/>
+            <EditorConfigMenu/>
+            <SpwParserContextProvider content={innerContent}>
+                <SpwMonacoPlugin editor={editor} content={innerContent} tabName={tabName}/>
+            </SpwParserContextProvider>
         </EditorContainer>
     );
 });
 export function SpwEditor(properties: SpwEditorProps) {
     return (
-        <SpwParserContextProvider>
-            <ConfigContext.Provider value={properties}>
-                <ConfigContext.Consumer
-                    children={([c, d]) => <Internal _$events={c._$events} config={c.config} dispatch={d}/>}/>
-            </ConfigContext.Provider>
-        </SpwParserContextProvider>
+        <EditorConfigContext.Provider value={properties}>
+            <EditorConfigContext.Consumer children={
+                ([c, d]) =>
+                    <Internal
+                        _$events={c._$events}
+                        config={c.config}
+                        dispatch={d}
+                    />
+            }/>
+        </EditorConfigContext.Provider>
     );
 }

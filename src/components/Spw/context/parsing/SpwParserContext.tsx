@@ -1,45 +1,24 @@
 import React from 'react';
 import {SpwItem} from '@spwashi/spw/constructs/ast/abstract/item';
-import {ParserErrorBoundary} from '../../../Editor/components/Editor/components/error/ParserErrorBoundary';
+import {ParserErrorBoundary} from '../../components/error/ParserErrorBoundary';
 import {createReducerContext} from '../../../../util/ReducerContext';
 
-export const __secret = Date.now();
-
 type Parsed = SpwItem | SpwItem[];
-type IParseStateContext =
+export type ISpwParserStateContext =
     {
+        content?: string | null,
         error: any;
         parsed: Parsed | null;
-        setParsed(e: Parsed, s: any): void;
-        setError(e: any, s: any): void;
     };
-
-class DefaultStateContextVal implements IParseStateContext {
-    get error(): any {
-        return this._error;
-    }
-    _parsed?: Parsed;
-    private _error: any;
-
-    get parsed() {
-        return this._parsed || null;
-    }
-
-    setParsed(parsed: Parsed, secret: any) {
-        if (secret !== __secret) throw new Error('Trying to access private property')
-        this._parsed = parsed;
-    }
-
-    setError(error: any, secret: any) {
-        if (secret !== __secret) throw new Error('Trying to access private property')
-        this._error = error;
-    }
-}
-
 type SpwParsingAction =
     { type: 'spw-parser$error', payload: any }
     | { type: 'spw-parser$parsed', payload: SpwItem | SpwItem[] };
-export const SpwParsingContext        =
+const initState                = ({content}: { content?: string } = {}) => ({
+    content: content ?? null,
+    error:   null,
+    parsed:  null,
+});
+export const SpwParsingContext =
                  createReducerContext((state, action?: SpwParsingAction) => {
                                           switch (action?.type) {
                                               case 'spw-parser$error':
@@ -57,22 +36,20 @@ export const SpwParsingContext        =
                                           }
                                           return state;
                                       },
-                                      () => {
-                                          return {
-                                              error:  null,
-                                              parsed: null,
-                                          }
-                                      });
-const {Provider, Consumer}            = SpwParsingContext;
-export const SpwParserContextProvider = ({children}: { children: any }) => {
+                                      initState,
+                                      (s, p) => initState(p));
+
+const {Provider, Consumer} = SpwParsingContext;
+
+export const SpwParserContextProvider = ({children, content}: { content?: string, children: any }) => {
     return (
-        <Provider value={new DefaultStateContextVal()}>
+        <Provider value={{content, error: null, parsed: null}}>
             <ParserErrorBoundary>
                 {children}
             </ParserErrorBoundary>
         </Provider>
     );
 }
-export const SpwParserContextConsumer = ({children}: { children: (value: [IParseStateContext, unknown]) => any }) => {
+export const SpwParserContextConsumer = ({children}: { children: (value: [ISpwParserStateContext, unknown]) => any }) => {
     return <Consumer children={children}/>;
 }

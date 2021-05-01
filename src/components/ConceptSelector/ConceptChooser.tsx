@@ -3,15 +3,15 @@ import {InlineSpwEditor} from '../Editor/components/Editor/InlineSpwEditor';
 import {useLocalStorage} from '@spwashi/react-utils-dom'
 
 export interface ConceptChooserProps {
-    curr: string | null
+    value: string | null
     onChange: (concept: string) => unknown;
 }
 
 export const ConceptChooser = (props: ConceptChooserProps) => {
-    const [local, setLocal] = useLocalStorage<string>('editor.concept', props.curr || '')
+    const [local, setLocal] = useLocalStorage<string>('editor.concept', props.value || '')
 
-    useEffect(() => { setLocal(props.curr || '') }, [props.curr])
-    const val = props.curr || local || '';
+    useEffect(() => { setLocal(props.value || '') }, [props.value])
+    const val = props.value || local || '';
 
     return (
         <div className="ConceptChooser" style={{fontSize: '30px', display: 'flex', alignItems: 'center'}}>
@@ -23,7 +23,7 @@ export const ConceptChooser = (props: ConceptChooserProps) => {
                 margin:     '0 1.5rem',
             }}>Select a concept:
             </div>
-            <div style={{flex: 1}}><InlineSpwEditor key={props.curr} value={val} onChange={props.onChange}/></div>
+            <div style={{flex: 1}}><InlineSpwEditor key={props.value} value={val} onChange={props.onChange}/></div>
         </div>
     );
 };

@@ -1,6 +1,6 @@
 import {Runtime} from '@spwashi/spw/constructs/runtime/runtime';
 import {useEffect, useMemo, useState} from 'react';
-import {initializeRuntime, loadConcept} from '../../../SpwClient/hooks/util/runtime/loadConcept';
+import {initializeRuntime, loadConcept} from '../../SpwClient/hooks/util/runtime/loadConcept';
 import {SpwItem} from '@spwashi/spw/constructs/ast/abstract/item';
 
 function updateError(e: Error | any, setHasError: (value: (((prevState: any) => any) | any)) => void) {

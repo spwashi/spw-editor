@@ -1,74 +1,130 @@
-import React, {Context, createContext, FC, ReducerAction, ReducerState, useEffect, useReducer} from 'react';
+import React, {Context, createContext, FC, ReducerAction, ReducerState, useContext, useEffect, useReducer} from 'react';
 
+export type IReducerContextAction = { type: string, payload?: any };
+export type IReducerContextState<A extends IReducerContextAction = any> = {
+    [k: string]: any
 
-type Reducer<State, Action, P = any> = (state: State, action: Action) => State;
-type StateType<R> = R extends Reducer<infer S, any> ? S : any;
-type ActionType<R> = R extends Reducer<any, infer A> ? A : any;
-type ProviderProps<A> = (A extends Reducer<any, any, infer A> ? A : any) & { children: any, value?: any } | any;
+    // a list of events that have been dispatched
+    _$events?: A[],
+}
 
-type ConsumerProps<R> = { children: (params: [StateType<R>, (action: ActionType<R>) => any]) => any };
-type DispatchType<R> = { (action: ActionType<R>): any };
-type ReducerContext<R> = {
-    Provider: FC<ProviderProps<R>>,
-    Consumer: FC<ConsumerProps<R>>,
-    StateContext: Context<StateType<R>>;
-    DispatchContext: Context<DispatchType<R>>
+/**
+ * The reducer used to initialize the context
+ */
+export type ReducerContextReducer<State, Action, P = any> = (state: State, action: Action) => State;
+/**
+ * The State of the Reducer
+ */
+export type ReducerContextState<R> = R extends ReducerContextReducer<infer S, any> ? S : any;
+/**
+ * Actions dispatched on the reducer
+ */
+export type ReducerContextAction<R> = R extends ReducerContextReducer<any, infer A> ? A : any;
+/**
+ * Function that dispatches actions on the reducer
+ */
+export type ReducerContextDispatch<R> = { (action: ReducerContextAction<R>): any };
+/**
+ * Properties Passed to the Provider of this ReducerContext
+ */
+export type ReducerContextProviderProps<A> =
+    (A extends ReducerContextReducer<any, any, infer A> ? A : any) & { children: any, value?: any }
+    | any;
+/**
+ * Properties passed to Consumers of this ReducerContext
+ */
+export type ReducerContextConsumerProps<R> = { children: (params: [ReducerContextState<R>, ReducerContextDispatch<R>]) => any };
+/**
+ * A Context that represents a reducer
+ */
+export type ReducerContext<R> = {
+    Provider: FC<ReducerContextProviderProps<R>>,
+    Consumer: FC<ReducerContextConsumerProps<R>>,
+    StateContext: Context<ReducerContextState<R>>;
+    DispatchContext: Context<ReducerContextDispatch<R>>
 };
-type StateInitializer<R> = (p?: ProviderProps<R>) => StateType<R>;
-type StateModifier<R> = (s: StateType<R>, p?: Omit<ProviderProps<R>, 'children'>) => StateType<R>;
-export function createReducerContext<R extends Reducer<S, A> = any, S extends { _$events?: A[], [k: string]: any } = any, A extends { type: string, payload?: any } = any, P = any>(reducer: R, initState: StateInitializer<R>, updateState?: StateModifier<R>): ReducerContext<R> {
-    type Action = ActionType<R>;
-    const StateContext    = createContext<StateType<R>>(initState());
-    const DispatchContext = createContext<DispatchType<R>>((a: Action) => {});
+/**
+ * Function for initializing the state of a ReducerContext based on the properties passed to the provider
+ */
+export type StateInitHandler<R> = (p?: ReducerContextProviderProps<R>) => ReducerContextState<R>;
+/**
+ * Function for updating the state of the ReducerContext based on the properties passed to the provider after it's been mounted
+ */
+export type StateUpdateHandler<R, P extends any = Omit<ReducerContextProviderProps<R>, 'children'>> = (s: ReducerContextState<R>, p?: P) => ReducerContextState<R>;
 
-    const wrappedReducer = (s: S, a: A) => {
-        if (a?.type === '$$update$$') return a.payload;
+/**
+ * Creates a StateContext, DispatchContext, Provider, and Consumer for a reducer
+ */
+export function createReducerContext<R extends ReducerContextReducer<S, A> = any,
+    S extends IReducerContextState<A> = R extends ReducerContextReducer<infer S, infer A> ? S : any,
+    A extends IReducerContextAction = R extends ReducerContextReducer<infer S, infer A> ? A : any,
+    P = any>(reducer: R, initState: StateInitHandler<R>, updateState?: StateUpdateHandler<R>): ReducerContext<R> {
+    type Action = ReducerContextAction<R>;
+    const StateContext    = createContext<ReducerContextState<R>>(initState());
+    const DispatchContext = createContext<ReducerContextDispatch<R>>((a: Action) => {});
 
-        if (Array.isArray(s?._$events)) {
-            s._$events = [a, ...s._$events];
-        }
+    const wrappedReducer: R =
+              ((s: S, a: A) => {
+                  if (a?.type === '$$update$$') return a.payload;
+                  if (a?.type === '$$clear-events$$') {
+                      s._$events = [];
+                      return s;
+                  }
 
-        switch (a?.type) {
-            default:
-                const b = s as any;
-                (b._$actions = b._$actions || []).push()
-        }
-        return reducer(s, a);
-    }
+                  if (Array.isArray(s?._$events)) {
+                      s._$events = [
+                          a,
+                          ...s._$events,
+                      ];
+                  }
 
-    function Provider({children, value}: ProviderProps<R>) {
-        const [state, dispatch] = useReducer<R, any>(wrappedReducer as R, value, (props) => initState(props) as ReducerState<R>)
-        useEffect(
-            () => updateState && dispatch({
-                                              type:    '$$update$$',
-                                              payload: updateState(state as StateType<R>, value),
-                                          } as ReducerAction<R>),
-            [value],
-        )
-        return (
-            <StateContext.Provider value={state as StateType<R>}>
-                <DispatchContext.Provider value={dispatch as any}>
-                    {children}
-                </DispatchContext.Provider>
-            </StateContext.Provider>
-        )
-    }
+                  switch (a?.type) {
+                      default:
+                          const b = s as any;
+                          (b._$actions = b._$actions || []).push()
+                  }
+                  return reducer(s, a);
+              }) as R
 
-    function Consumer({children}: ConsumerProps<R>) {
-        return <StateContext.Consumer>{
-            (state) => {
-                return <DispatchContext.Consumer>{
-                    (dispatch) => {
-                        return children([state, dispatch])
-                    }
-                }</DispatchContext.Consumer>
-            }
-        }</StateContext.Consumer>
-    }
+
     return {
-        Provider,
-        Consumer,
         StateContext,
         DispatchContext,
+        Provider({children, value}: ReducerContextProviderProps<R>) {
+            const initializer       = (props: ReducerContextProviderProps<R>) => initState(props) as ReducerState<R>;
+            const [state, dispatch] = useReducer<R, any>(wrappedReducer, value, initializer)
+
+            useEffect(() => {
+                if (!updateState) return;
+                const next = updateState(state as ReducerContextState<R>, value);
+                if (next === state) return;
+                const action = {type: '$$update$$', payload: next} as ReducerAction<R>;
+                dispatch(action);
+            }, [value])
+
+            return (
+                <StateContext.Provider value={state as ReducerContextState<R>}>
+                    <DispatchContext.Provider value={dispatch as any}>{children}</DispatchContext.Provider>
+                </StateContext.Provider>
+            )
+        },
+        Consumer({children}: ReducerContextConsumerProps<R>) {
+            return (
+                <StateContext.Consumer>{
+                    (state) => {
+                        return (
+                            <DispatchContext.Consumer>{(dispatch) => children([state, dispatch])}</DispatchContext.Consumer>
+                        )
+                    }
+                }</StateContext.Consumer>
+            )
+        },
     }
+}
+
+
+export function useReducerContext<R>(reducerContext: ReducerContext<R>): [ReducerContextState<R>, ReducerContextDispatch<R>] {
+    const state    = useContext(reducerContext.StateContext) as ReducerContextState<R>;
+    const dispatch = useContext(reducerContext.DispatchContext) as ReducerContextDispatch<R>;
+    return [state, dispatch]
 }

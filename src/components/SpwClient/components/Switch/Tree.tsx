@@ -1,6 +1,6 @@
 import ReactJson from 'react-json-view';
 import React from 'react';
-import {useSpwParser} from '../../../Editor/hooks/spw/useSpwParser';
+import {useSpwParser} from '../../../Spw/hooks/useSpwParser';
 
 
 export type TreeComponentConfig = { content: string | null }
