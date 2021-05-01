@@ -1,11 +1,12 @@
 import {useCallback, useEffect} from 'react';
 import {editor, IKeyboardEvent} from 'monaco-editor';
+import {KeydownHandler} from '../../../constants/global.editor';
 import IStandaloneCodeEditor = editor.IStandaloneCodeEditor;
 
 
 export function useKeydownCallback(editor: IStandaloneCodeEditor | null, inline: boolean | undefined) {
     const onKeyDown =
-              useCallback(
+              useCallback<KeydownHandler>(
                   (e: IKeyboardEvent) => {
                       if (!editor) return
                       const isTab = e.code === 'Tab';

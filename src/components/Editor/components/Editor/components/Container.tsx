@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import {Config} from '../global.editor';
+import {Config} from '../constants/global.editor';
 import {useMemo} from 'react';
 import {EditorDumbsaveState} from '../../../hooks/editor/save/useEditorSave';
 import {editor} from 'monaco-editor/esm/vs/editor/editor.api';

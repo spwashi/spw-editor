@@ -11,7 +11,6 @@ import {CompleteSyncAction} from './actions/sync/sync';
 import {originOption} from './types';
 
 const spwServiceReducer: Reducer<ISpwServiceState, ISpwServiceAction> = ((state, action: ISpwServiceAction) => {
-    console.log(action.type)
     switch (action.type) {
         case 'begin-save':
             return {
@@ -73,12 +72,14 @@ export function PersistenceContextProvider({children}: { children: React.ReactEl
         </PersistenceStateContext.Provider>
     )
 }
+
 type SaveLocation = 'local' | 'server';
 type PersistenceContextProps = {
     label?: string | null,
     hash?: string | null
 };
 type Out = [ISpwServiceState, ISpwServiceDispatch];
+
 function useCompleteSync(state: ISpwServiceState, dispatch: ISpwServiceDispatch, saveLocation: 'local' | 'server') {
     useEffect(
         () => {
@@ -141,6 +142,7 @@ function useBeginSync({label, hash}: PersistenceContextProps, state: ISpwService
         }
     }, [hash]);
 }
+
 export function usePersistenceContext({hash, label}: PersistenceContextProps = {}): Out {
     const state                         = useContext(PersistenceStateContext);
     const dispatch: ISpwServiceDispatch = useContext(PersistenceDispatchContext);

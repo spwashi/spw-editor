@@ -1,7 +1,7 @@
 import React from 'react';
 import {Tree, TreeComponentConfig} from './Tree';
 import {SpwEditor} from '../../../Editor/components/Editor/SpwEditor';
-import {SpwEditorProps} from '../../../Editor/components/Editor/types';
+import {SpwEditorProps} from '../../../Editor/components/Editor/constants/types';
 
 interface BodyParams {
     editor: SpwEditorProps | undefined;

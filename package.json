@@ -1,6 +1,6 @@
 {
   "name": "@spwashi/spw-editor",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "repository": {
     "url": "https://github.com/spwashi/spw-editor"
   },
@@ -15,7 +15,7 @@
     "monaco"
   ],
   "scripts": {
-    "build:dist": "webpack --config webpack.config.prod.js",
+    "build:prod": "webpack --config webpack.config.prod.js",
     "build:lib": "tsc",
     "serve": "serve -s out/",
     "dev": "webpack serve --port 3005",

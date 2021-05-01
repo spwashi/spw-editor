@@ -1,8 +1,8 @@
 // Hook
 import React, {useCallback, useEffect, useState} from 'react';
-import {initializeRuntime} from '../../SpwClient/hooks/util/runtime/loadConcept';
+import {initializeRuntime} from '../../../SpwClient/hooks/util/runtime/loadConcept';
 import {SpwDocument} from '@spwashi/spw';
-import {SpwEditor} from './Editor/SpwEditor';
+import {SpwEditor} from './SpwEditor';
 
 type Props = { value: string, onChange: (v: string) => unknown, };
 
@@ -29,6 +29,7 @@ export function InlineSpwEditor({value, onChange: onValueChange}: Props & { valu
             setParsed(false)
         }
     }, [pendingVal]);
+    const onChange = useCallback((t: string) => setInner(t.replace(/\n/g, ' ')), [setInner]);
     return (
         <div style={{
             padding:        '5px',
@@ -53,9 +54,8 @@ export function InlineSpwEditor({value, onChange: onValueChange}: Props & { valu
                                overviewRulerLanes:   0,
                            }}
                            events={{
-                               onChange(t) {
-                                   return setInner(t.replace(/\n/g, ' '));
-                               }, onBlur,
+                               onChange,
+                               onBlur,
                            }}>
                     {`${pendingVal}`}
                 </SpwEditor>

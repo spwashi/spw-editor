@@ -2,7 +2,7 @@ import {Runtime} from '@spwashi/spw';
 import {useCallback, useEffect, useRef} from 'react';
 import {editor} from 'monaco-editor/esm/vs/editor/editor.api';
 
-import {findMatchingNodes} from './findMatchingNodes';
+import {findMatchingNodes} from '../../_util/findMatchingNodes';
 
 export type IEditorMouseEvent = editor.IEditorMouseEvent;
 
@@ -22,18 +22,13 @@ export function useMousedownCallback(runtime: Runtime | undefined) {
                            if (!position) return;
                            findMatchingNodes(runtimeRef.current, position)
                                .then(response => {
-                                         const nodes   = response?.nodes;
-                                         const isArray = Array.isArray(nodes);
-                                         const isOne   = isArray && nodes?.length === 1;
-                                         console.log(
-                                             {
-                                                 key: isOne ? nodes?.[0].key : null,
-                                                 [isOne ? 'node' : 'nodes']:
-                                                      isOne ? nodes?.[0] : nodes,
-                                             },
-                                         )
-                                         console.log(
-                                         )
+                                         const nodes     = response?.nodes;
+                                         const isArray   = Array.isArray(nodes);
+                                         const isOne     = isArray && nodes?.length === 1;
+                                         const key       = isOne ? nodes?.[0].key : null;
+                                         const selection = isOne ? nodes?.[0] : nodes;
+                                         const sel       = isOne ? 'node' : 'nodes';
+                                         console.log({key: key, [sel]: selection})
                                      },
                                );
                        },

@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {InlineSpwEditor} from '../Editor/components/InlineSpwEditor';
+import {InlineSpwEditor} from '../Editor/components/Editor/InlineSpwEditor';
 import {useLocalStorage} from '@spwashi/react-utils-dom'
 
 export interface ConceptChooserProps {

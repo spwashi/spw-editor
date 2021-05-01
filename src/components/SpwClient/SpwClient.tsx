@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import ComponentSwitch from './components/Switch';
 import {EditorMode, StandardEditorParams} from './types';
 import {TreeComponentConfig} from './components/Switch/Tree';
-import {SpwEditorProps} from '../Editor/components/Editor/types';
+import {SpwEditorProps} from '../Editor/components/Editor/constants/types';
 
 /**
  * A text editor with externally defined state controllers

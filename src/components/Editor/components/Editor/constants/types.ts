@@ -1,4 +1,4 @@
-import {IEditorPreferences} from '../../util/initEditorConfig';
+import {IEditorPreferences} from '../../../util/initEditorConfig';
 import {EditorEventHandlers} from './global.editor';
 
 type ContentSource =

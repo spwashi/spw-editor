@@ -1,19 +1,20 @@
-import React, {memo, useEffect, useMemo, useRef, useState} from 'react';
+import React, {memo, useEffect, useMemo, useState} from 'react';
 import {default as MonacoEditor, EditorProps} from '@monaco-editor/react';
 import {editor} from 'monaco-editor/esm/vs/editor/editor.api';
 import {VimBar} from './components/vim/VimBar';
 import {useEditorSave} from '../../hooks/editor/save/useEditorSave';
-import {useMonacoEditorTab} from './hooks/useMonacoEditorTab';
-import {useKeydownCallback} from './hooks/callbacks/useKeydownCallback';
-import {SpwParserContextConsumer, SpwParserContextProvider, useSpwMonacoPlugin} from './hooks/spw/SpwParserContext';
+import {useTabName} from './hooks/monaco/useTabName';
+import {useKeydownCallback} from './hooks/monaco/callbacks/useKeydownCallback';
+import {SpwParserContextConsumer, SpwParserContextProvider} from '../../../Spw/context/parsing/SpwParserContext';
 import {EditorContainer, useEditorWrapperProps} from './components/Container';
-import {SpwEditorProps} from './types';
-import {Config} from './global.editor';
-import {useBlurListenerEffect} from './hooks/callbacks/useBlurListenerEffect';
+import {SpwEditorProps} from './constants/types';
+import {Config} from './constants/global.editor';
+import {useBlurListener} from './hooks/monaco/listeners/useBlurListener';
 import {initEditorConfig} from '../../util/initEditorConfig';
 import {useEditorBlurCommand} from './hooks/useEditorBlurCommand';
 import {ErrorAlert} from './components/error/ErrorAlert';
 import {createReducerContext} from '../../../../util/ReducerContext';
+import {useSpwMonacoPlugin} from '../../../Spw/hooks/monaco/plugins/useSpwMonacoPlugin';
 
 type IStandaloneCodeEditor = editor.IStandaloneCodeEditor;
 
@@ -53,29 +54,35 @@ const initState     = (properties: SpwEditorProps): SpwEditorContainerState => {
           } = properties || {};
 
     const content = d_content || _content || children || '';
-    return {config: {inline, events, preferences, enableVim, id, content}, _$events: []};
+    return {
+        config:   {inline, events, preferences, enableVim, id, content},
+        _$events: [],
+    };
 };
-const ConfigContext = createReducerContext((s: SpwEditorContainerState, action?: { type: 'toggle-vim' }) => {
-                                               switch (action?.type) {
-                                                   case 'toggle-vim':
-                                                       Object.assign(s.config, {enableVim: !s.config.enableVim})
-                                                       return s
-                                               }
-                                               return s;
-                                           },
-                                           initState,
-                                           (s, p) => {
-                                               const o = initState(p as SpwEditorProps);
-                                               return p ? Object.assign(s,
-                                                                        o,
-                                                                        {
-                                                                            ...s,
-                                                                            config: {
-                                                                                ...s.config,
-                                                                                events: o.config.events,
-                                                                            },
-                                                                        }) : s;
-                                           })
+const ConfigContext =
+          createReducerContext(
+              (s: SpwEditorContainerState, action?: { type: 'toggle-vim' }) => {
+                  switch (action?.type) {
+                      case 'toggle-vim':
+                          Object.assign(s.config, {enableVim: !s.config.enableVim})
+                          return s
+                  }
+                  return s;
+              },
+              initState,
+              (s, p) => {
+                  const o = initState(p as SpwEditorProps);
+                  return p ? Object.assign(s,
+                                           o,
+                                           {
+                                               ...s,
+                                               config: {
+                                                   ...s.config,
+                                                   events: o.config.events,
+                                               },
+                                           }) : s;
+              },
+          );
 
 function Menu({config, dispatch}: { config: Config, dispatch: any }) {
     const inline    = config.inline;
@@ -92,14 +99,10 @@ function Menu({config, dispatch}: { config: Config, dispatch: any }) {
 type SpwPluginProps = { editor: editor.IStandaloneCodeEditor | null, content: string, tabName: string };
 function SpwPlugin({editor, content, tabName}: SpwPluginProps) {
     useSpwMonacoPlugin(editor, content, tabName);
-    return <SpwParserContextConsumer>{value => <ErrorAlert error={value.error}/>}</SpwParserContextConsumer>;
+    return <SpwParserContextConsumer>{([value]) => <ErrorAlert error={value.error}/>}</SpwParserContextConsumer>;
 }
-function useInnerContentRef(external: string): [string, (s: string) => any] {
+function useInnerContent(external: string): [string, (s: string) => any] {
     return useState(external)
-    // const innerContentRef = useRef(external);
-    // const innerContent    = innerContentRef.current;
-    // const updateInner     = (content: string) => innerContentRef.current = content;
-    // return [innerContent, updateInner];
 }
 const Internal = memo(<S extends any>({
                                           config,
@@ -113,7 +116,7 @@ const Internal = memo(<S extends any>({
 
     const [editor, editorProps]       = useEditorJunction({preferences, content: externalContent, events});
     const inline                      = config.inline;
-    const [innerContent, updateInner] = useInnerContentRef(externalContent);
+    const [innerContent, updateInner] = useInnerContent(externalContent);
 
 
     useEffect(() => {
@@ -128,7 +131,7 @@ const Internal = memo(<S extends any>({
 
     useKeydownCallback(editor, inline);
     useEditorBlurCommand(editor);
-    useBlurListenerEffect(editor, () => dispatch({type: 'blur', payload: new Date().toLocaleString()}));
+    useBlurListener(editor, () => dispatch({type: 'blur', payload: new Date().toLocaleString()}));
     useEffect(
         () => {
             if (!editor) return;
@@ -143,7 +146,7 @@ const Internal = memo(<S extends any>({
 
     const tabName      = '[none]';
     const saveState    = useEditorSave(innerContent, events.onSave);
-    const viewState    = useMonacoEditorTab(editor, tabName);
+    const viewState    = useTabName(editor, tabName);
     const wrapperProps = useEditorWrapperProps(preferences, {saveState, viewState});
     const vim          = !config.inline && config.enableVim;
 

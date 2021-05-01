@@ -1,14 +1,14 @@
-import {EditorDumbsaveHandler} from '../../hooks/editor/save/useEditorSave';
+import {EditorDumbsaveHandler} from '../../../hooks/editor/save/useEditorSave';
 import {editor, IKeyboardEvent} from 'monaco-editor';
-import {IEditorSize} from '../../util/initEditorConfig';
+import {IEditorSize} from '../../../util/initEditorConfig';
 import IStandaloneCodeEditor = editor.IStandaloneCodeEditor;
+import IEditorMouseEvent = editor.IEditorMouseEvent;
 
-type IEditorMouseEvent = editor.IEditorMouseEvent;
-export type KeydownHandler = (e: IKeyboardEvent, editor: IStandaloneCodeEditor) => void;
-export type MousedownHandler = (e: editor.IEditorMouseEvent) => void;
+export type KeydownHandler = (e: IKeyboardEvent) => void;
+export type MousedownHandler = (e: IEditorMouseEvent) => void;
 export type BlurHandler = (e: IStandaloneCodeEditor) => void | unknown
 export type EditorEventHandlers = {
-    onMouseDown?: (e: IEditorMouseEvent) => void,
+    onMouseDown?: MousedownHandler,
     onChange?: (text: string) => void | unknown;
     onBlur?: BlurHandler;
     onSave?: EditorDumbsaveHandler;

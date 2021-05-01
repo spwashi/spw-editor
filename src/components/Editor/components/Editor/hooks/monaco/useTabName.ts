@@ -6,7 +6,7 @@ import {useLocalStorage} from '@spwashi/react-utils-dom';
 
 type E = IStandaloneCodeEditor | null;
 type R = ICodeEditorViewState | null;
-export function useMonacoEditorTab(editor: E, tabName: string = 'only'): R {
+export function useTabName(editor: E, tabName: string = 'only'): R {
     const [state, setState] = useLocalStorage<R>(`editor.state=${tabName}`, null);
     useEffect(() => {
         if (!editor || !state) return;

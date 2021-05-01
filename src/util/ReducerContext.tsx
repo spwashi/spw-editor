@@ -1,21 +1,25 @@
-import React, {createContext, FC, ReducerAction, ReducerState, useEffect, useReducer} from 'react';
+import React, {Context, createContext, FC, ReducerAction, ReducerState, useEffect, useReducer} from 'react';
 
 
-type Reducer<State, Action, P = any> = (state: State, action?: Action) => State;
+type Reducer<State, Action, P = any> = (state: State, action: Action) => State;
 type StateType<R> = R extends Reducer<infer S, any> ? S : any;
 type ActionType<R> = R extends Reducer<any, infer A> ? A : any;
 type ProviderProps<A> = (A extends Reducer<any, any, infer A> ? A : any) & { children: any, value?: any } | any;
 
 type ConsumerProps<R> = { children: (params: [StateType<R>, (action: ActionType<R>) => any]) => any };
-type Context<R> = { Provider: FC<ProviderProps<R>>, Consumer: FC<ConsumerProps<R>> };
+type DispatchType<R> = { (action: ActionType<R>): any };
+type ReducerContext<R> = {
+    Provider: FC<ProviderProps<R>>,
+    Consumer: FC<ConsumerProps<R>>,
+    StateContext: Context<StateType<R>>;
+    DispatchContext: Context<DispatchType<R>>
+};
 type StateInitializer<R> = (p?: ProviderProps<R>) => StateType<R>;
 type StateModifier<R> = (s: StateType<R>, p?: Omit<ProviderProps<R>, 'children'>) => StateType<R>;
-export function createReducerContext<R extends Reducer<S, A> = any, S extends { _$events?: A[], [k: string]: any } = any, A extends { type: string, payload?: any } = any, P = any>(reducer: R, initState: StateInitializer<R>, updateState?: StateModifier<R>): Context<R> {
+export function createReducerContext<R extends Reducer<S, A> = any, S extends { _$events?: A[], [k: string]: any } = any, A extends { type: string, payload?: any } = any, P = any>(reducer: R, initState: StateInitializer<R>, updateState?: StateModifier<R>): ReducerContext<R> {
     type Action = ActionType<R>;
-    type State = StateType<R>;
-    type Dispatch = { (action: Action): any }
-    const StateContext    = createContext<State>(initState());
-    const DispatchContext = createContext<Dispatch>((a: Action) => {});
+    const StateContext    = createContext<StateType<R>>(initState());
+    const DispatchContext = createContext<DispatchType<R>>((a: Action) => {});
 
     const wrappedReducer = (s: S, a: A) => {
         if (a?.type === '$$update$$') return a.payload;
@@ -42,7 +46,7 @@ export function createReducerContext<R extends Reducer<S, A> = any, S extends { 
             [value],
         )
         return (
-            <StateContext.Provider value={state as State}>
+            <StateContext.Provider value={state as StateType<R>}>
                 <DispatchContext.Provider value={dispatch as any}>
                     {children}
                 </DispatchContext.Provider>
@@ -64,5 +68,7 @@ export function createReducerContext<R extends Reducer<S, A> = any, S extends { 
     return {
         Provider,
         Consumer,
+        StateContext,
+        DispatchContext,
     }
 }
