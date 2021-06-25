@@ -1,9 +1,12 @@
-import {Runtime, SpwDocument, spwParser} from '@spwashi/spw';
-import {Parser} from '@spwashi/spw/constructs/runtime/runtime';
+import {initRuntime} from '@spwashi/spw/constructs/runtime/_util/initializers/runtime';
 
-type Concept = { label: string, src: string };
-export const initializeRuntime = () => { return new Runtime(spwParser as unknown as Parser) }
 
-export function loadConcept({label, src}: Concept, runtime: Runtime) {
-    return runtime.loadDocument(new SpwDocument(label, src));
+export function loadConcept({src}: { src: string }) {
+    if (!src) return null;
+    try {
+        return initRuntime(src).registers.subject;
+    } catch (e) {
+        console.log(e);
+        return null
+    }
 }

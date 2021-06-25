@@ -1,7 +1,6 @@
-import {Runtime} from '@spwashi/spw/constructs/runtime/runtime';
 import {useEffect, useMemo, useState} from 'react';
-import {initializeRuntime, loadConcept} from '../../SpwClient/hooks/util/runtime/loadConcept';
-import {SpwItem} from '@spwashi/spw/constructs/ast/abstract/item';
+import {Construct} from '@spwashi/spw/constructs/ast/_abstract/construct';
+import {initRuntime} from '@spwashi/spw/constructs/runtime/_util/initializers/runtime';
 
 function updateError(e: Error | any, setHasError: (value: (((prevState: any) => any) | any)) => void) {
     console.log(`%c ${e.message}`, 'style: red');
@@ -16,28 +15,27 @@ function updateError(e: Error | any, setHasError: (value: (((prevState: any) => 
 
 type Parsed =
     {
-        runtime: Runtime;
-        tree: SpwItem | SpwItem[];
-        ast: SpwItem | SpwItem[];
+        tree: Construct | Construct[];
+        ast: Construct | Construct[];
         error: Error
     };
-export function useSpwParser(src: string | null, label: string = '[none]'): Parsed {
-    const runtime = useMemo(() => { return initializeRuntime(); }, [])
-
+export function useSpwParser(src: string | null): Parsed {
     const [tree, setTree]   = useState<any>([]);
     const [ast, setAst]     = useState<any>([]);
     const [error, setError] = useState<any>(null);
 
     useEffect(() => {
-        if (!src || !runtime) return
+        if (!src) return
         try {
-            const _ast = loadConcept({label, src}, runtime) as unknown as SpwItem | SpwItem[];
+            const _ast = initRuntime(src).registers.subject as unknown as Construct | Construct[];
             setError(null);
             setAst(_ast);
             setTree(JSON.parse(JSON.stringify(_ast, (k, v) => v instanceof Set ? Array.from(v) : v)));
-        } catch (e) { updateError(e, setError); }
-    }, [src, runtime]);
+        } catch (e) {
+            updateError(e, setError);
+        }
+    }, [src]);
 
-    return useMemo(() => ({error, runtime, tree, ast}),
-                   [error, runtime, tree, ast]);
+    return useMemo(() => ({error, tree, ast}),
+                   [error, tree, ast]);
 }

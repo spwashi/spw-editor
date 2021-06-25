@@ -9,9 +9,15 @@ interface BodyParams {
 }
 
 export default function ComponentSwitch({editor, tree}: BodyParams) {
+    const {events, inline, preferences, ...rest} = editor ?? {};
     return (
         <div style={{display: 'flex', height: '100%', width: '100%', overflow: 'hidden'}}>
-            {editor && <SpwEditor key={'spw'} enableVim={true} {...editor} />}
+            <SpwEditor key={'spw'}
+                       enableVim={true}
+                       preferences={preferences}
+                       inline={inline}
+                       events={events}
+                       {...rest} />
             {tree && <Tree content={tree.content}/>}
         </div>
     );

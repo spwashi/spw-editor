@@ -3,7 +3,9 @@ import {createReducerContext, ReducerContextProviderProps, ReducerContextState} 
 import {Config} from '../../components/Editor/constants/global.editor';
 
 type SpwConfigContextState = { config: Config, _$events?: any[] };
-type SpwConfigContextAction = { type: 'toggle-vim' };
+type SpwConfigContextAction =
+    { type: 'toggle-vim' }
+    | { type: 'toggle-edit' };
 type SpwConfigContextReducer = typeof reducer;
 type R = SpwConfigContextReducer;
 
@@ -11,13 +13,30 @@ type R = SpwConfigContextReducer;
 /**
  * Reducer for the EditorConfigContext
  */
-function reducer(s: SpwConfigContextState, action: SpwConfigContextAction) {
+function reducer(state: SpwConfigContextState, action: SpwConfigContextAction) {
     switch (action?.type) {
         case 'toggle-vim':
-            Object.assign(s.config, {enableVim: !s.config.enableVim})
-            return s
+            return {
+                ...state,
+                config: {
+                    ...state.config,
+                    enableVim: !state.config.enableVim,
+                },
+            };
+        case 'toggle-edit':
+            console.log('EDIT')
+            return {
+                ...state,
+                config: {
+                    ...state.config,
+                    preferences: {
+                        ...state.config.preferences,
+                        readOnly: !state.config.preferences?.readOnly,
+                    },
+                },
+            };
     }
-    return s;
+    return state;
 }
 
 /**
@@ -60,7 +79,11 @@ function updateState(s: ReducerContextState<R>, p: ReducerContextProviderProps<R
                              updated,
                              {
                                  ...s,
-                                 config: {...s.config, events: updated.config.events},
+                                 config:
+                                     {
+                                         ...s.config,
+                                         events: updated.config.events,
+                                     },
                              }) : s;
 }
 

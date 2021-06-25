@@ -1,19 +1,26 @@
 // Hook
 import React, {useCallback, useEffect, useState} from 'react';
-import {initializeRuntime} from '../../../SpwClient/hooks/util/runtime/loadConcept';
-import {SpwDocument} from '@spwashi/spw';
 import {SpwEditor} from './SpwEditor';
+import {initRuntime} from '@spwashi/spw/constructs/runtime/_util/initializers/runtime';
 
 type Props = { value: string, onChange: (v: string) => unknown, };
 
 export function InlineSpwEditor({value, onChange: onValueChange}: Props & { value: string }) {
     const [pendingVal, setInner] = useState<string>(value);
     const [key, setParsed]       = useState<string | false>(false);
-    const commit                 = useCallback(() => onValueChange(key || pendingVal), [onValueChange, key, pendingVal]);
-    const rollback               = useCallback(() => (onValueChange(value), setInner(value)), [value, onValueChange]);
+    const commit                 = useCallback(() => onValueChange(key || pendingVal), [
+        onValueChange, key, pendingVal,
+    ]);
+    const rollback               = useCallback(() => {
+        onValueChange(value);
+        return setInner(value);
+    }, [value, onValueChange]);
     const onBlur                 = useCallback(() => {
                                                    const doConfirm = false;
-                                                   return key !== value && (!doConfirm ? true : confirm(`Confirm change to concept: ${JSON.stringify([key, value])}`))
+                                                   return key !== value && (!doConfirm ? true : confirm(`Confirm change to concept: ${JSON.stringify([
+                                                                                                                                                         key,
+                                                                                                                                                         value,
+                                                                                                                                                     ])}`))
                                                           ? commit()
                                                           : rollback();
                                                },
@@ -21,9 +28,12 @@ export function InlineSpwEditor({value, onChange: onValueChange}: Props & { valu
     useEffect(() => { if (value !== pendingVal) { setInner(value); } }, [value])
     useEffect(() => {
         try {
-            const _runtime = initializeRuntime();
-            _runtime.loadDocument(new SpwDocument('editor.concept', `${pendingVal}`));
-            const key = _runtime.registers?.lastAcknowledged?.entries[0].item.key;
+            if (!pendingVal) {
+                setParsed(false)
+                return;
+            }
+            const _runtime = initRuntime(`${pendingVal}`);
+            const key      = _runtime.registers?.subject?.entries[0].item.key;
             setParsed(key ? `${key}` : false)
         } catch (e) {
             setParsed(false)

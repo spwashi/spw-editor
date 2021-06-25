@@ -1,18 +1,20 @@
-import {SpwItemKind} from '@spwashi/spw/constructs';
-import { SpwNode } from '@spwashi/spw/constructs/ast/nodes/abstract/node';
+import {ConstructKind} from '@spwashi/spw/constructs/ast/_types/kinds';
+import {Node} from '@spwashi/spw/constructs/ast/nodes/_abstract/node';
+
+type SpwItemKind = ConstructKind;
 
 export class NodeSelection<K extends SpwItemKind = SpwItemKind> {
-    protected _nodes?: SpwNode<K>[];
+    protected _nodes?: Node<K>[];
 
-    get nodes(): SpwNode<K>[] | undefined {
+    get nodes(): Node<K>[] | undefined {
         return this._nodes;
     }
 
-    set nodes(value: SpwNode<K>[] | undefined) {
+    set nodes(value: Node<K>[] | undefined) {
         this._nodes = value;
     }
 
-    static from<Kind extends SpwItemKind>(nodes: NodeSelection<Kind> | SpwNode<Kind> | SpwNode<Kind>[] | null) {
+    static from<Kind extends SpwItemKind>(nodes: NodeSelection<Kind> | Node<Kind> | Node<Kind>[] | null) {
         const selection = new this();
         if (!nodes) return selection;
 
@@ -30,7 +32,7 @@ export class NodeSelection<K extends SpwItemKind = SpwItemKind> {
             return selection;
 
         }
-        if (nodes.hydrated?.kind) {
+        if (nodes.kind) {
             selection.nodes = [nodes]
             return selection;
 
@@ -40,7 +42,7 @@ export class NodeSelection<K extends SpwItemKind = SpwItemKind> {
     }
 
 
-    forEach(callback: { (node: SpwNode<any>): void }) {
+    forEach(callback: { (node: Node<any>): void }) {
         this._nodes?.forEach(callback);
     }
 }

@@ -1,9 +1,12 @@
 import React from 'react';
-import {SpwItem} from '@spwashi/spw/constructs/ast/abstract/item';
 import {ParserErrorBoundary} from '../../components/error/ParserErrorBoundary';
 import {createReducerContext} from '../../../../util/ReducerContext';
+import {Construct} from '@spwashi/spw/constructs/ast/_abstract/construct';
 
-type Parsed = SpwItem | SpwItem[];
+type SpwItem = Construct;
+type Parsed =
+    SpwItem
+    | SpwItem[];
 export type ISpwParserStateContext =
     {
         content?: string | null,

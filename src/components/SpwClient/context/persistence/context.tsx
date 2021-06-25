@@ -47,12 +47,9 @@ const spwServiceReducer: Reducer<ISpwServiceState, ISpwServiceAction> = ((state,
                 },
             }
         case 'complete-save':
+            console.log('COMPLETING SAVE')
             return {
                 ...state,
-                saving:     {
-                    ...state.saving,
-                    [action.meta.origin]: null,
-                },
                 loadedItem: {
                     ...state.loadedItem,
                     [action.meta.origin]: {
@@ -73,7 +70,9 @@ export function PersistenceContextProvider({children}: { children: React.ReactEl
     )
 }
 
-type SaveLocation = 'local' | 'server';
+type SaveLocation =
+    'local'
+    | 'server';
 type PersistenceContextProps = {
     label?: string | null,
     hash?: string | null
@@ -158,7 +157,10 @@ export function usePersistenceContext({hash, label}: PersistenceContextProps = {
                 return;
             }
 
-            const getItem  = (origin: originOption) => state.saving[origin]?.item
+            const getItem  = (origin: originOption) => {
+                if (!origin) throw new Error('Expected an origin')
+                return state.saving[origin]?.item;
+            }
             const complete = (origin: originOption, concept?: ISpwConcept) => dispatch({
                                                                                            type:    'complete-save',
                                                                                            payload: concept,
@@ -183,6 +185,7 @@ export function usePersistenceContext({hash, label}: PersistenceContextProps = {
                     if (saveLocation !== 'server') return;
                     const concept = getItem('[server]');
                     if (!concept) {
+                        console.log(state)
                         console.log('not completing server save: no item is being saved');
                         return;
                     }

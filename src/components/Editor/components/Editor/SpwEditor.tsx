@@ -1,4 +1,4 @@
-import React, {memo, useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {default as MonacoEditor, EditorProps} from '@monaco-editor/react';
 import {editor} from 'monaco-editor/esm/vs/editor/editor.api';
 import {MonacoVimBar} from './components/vim/MonacoVimBar';
@@ -24,44 +24,51 @@ function useEditorJunction(config: Pick<Config, 'preferences' | 'content' | 'eve
 
     const preferences                    = config.preferences || {};
     const text                           = config.content;
-    const {w: width, h: height, options} = useMemo(() => initEditorConfig(preferences, text), [preferences, text])
+    const {w: width, h: height, options} = useMemo(
+        () => initEditorConfig(preferences, text),
+        [preferences, text],
+    )
 
     const onChange = (s: string | undefined) => !(!s && s !== '') && config.events.onChange?.(s);
-    const onMount  = (e: editor.IStandaloneCodeEditor) => setEditor(e as IStandaloneCodeEditor);
+    const onMount  = useCallback((e: editor.IStandaloneCodeEditor) => setEditor(e as IStandaloneCodeEditor),
+                                 [setEditor]);
     const value    = text || '';
 
     return [editor, {options, onChange, onMount, value, width, height}];
 }
 
 function EditorConfigMenu() {
-    const [{config}, dispatch] = useReducerContext(EditorConfigContext)
+    const [state, dispatch] = useReducerContext(EditorConfigContext)
+    const {config}          = state;
 
-    const inline    = config.inline;
-    const toggleVim = () => dispatch({type: 'toggle-vim'});
-    const vim       = +(config.enableVim || 0);
+    const editable   = !!state.config.preferences?.readOnly;
+    const inline     = config.inline;
+    const toggleVim  = () => dispatch({type: 'toggle-vim'});
+    const toggleEdit = () => dispatch({type: 'toggle-edit'});
+    const enableVim  = config.enableVim;
     return (
         <div className="config" style={{position: 'absolute', top: 0, right: 0, zIndex: 1}}>
+
             <div>
-                {!inline && <button onClick={toggleVim}>{['enable', 'disable'][vim]} vim</button>}
+                {!inline && <button onClick={toggleEdit}>{['readonly', 'edit'][+(editable || 0)]}</button>}
+                {/* enable vim, disable vim */}
+                {!inline && <button onClick={toggleVim}>{['enable', 'disable'][+(enableVim || 0)]} vim</button>}
             </div>
         </div>
     );
 }
-function useInnerContent(external: string): [string, (s: string) => any] {
-    return useState(external)
-}
-const Internal = memo(<S extends any>({
-                                          config,
-                                          _$events,
-                                          dispatch,
-                                      }: { config: Config, _$events?: any[], dispatch: any }) => {
+const Internal = ({
+                      config,
+                      _$events,
+                      dispatch,
+                  }: { config: Config, _$events?: any[], dispatch: any }) => {
 
     const externalContent = config.content;
     const events          = config.events || {};
     const preferences     = config.preferences;
 
     const [editor, editorProps]       = useEditorJunction({preferences, content: externalContent, events});
-    const [innerContent, updateInner] = useInnerContent(externalContent);
+    const [innerContent, updateInner] = useState(externalContent);
 
     useEffect(() => {
         const action = _$events?.[0];
@@ -77,7 +84,7 @@ const Internal = memo(<S extends any>({
     useBlurListener(editor, () => dispatch({type: 'blur', payload: new Date().toLocaleString()}));
     useEffect(() => {
                   if (!editor) return;
-                  const d = editor.onDidChangeModelContent(e => {
+                  const d = editor.onDidChangeModelContent(() => {
                       const value = editor.getValue();
                       updateInner(value);
                       events.onChange && events.onChange(value)
@@ -94,17 +101,22 @@ const Internal = memo(<S extends any>({
     if (!config) return null;
 
     const vim = !config.inline && config.enableVim;
-    return (
-        <EditorContainer {...wrapperProps}>
-            <MonacoEditor theme={'spw-dark'} language={'spw'} {...editorProps}/>
-            <MonacoVimBar editor={editor}/>
-            <EditorConfigMenu/>
-            <SpwParserContextProvider content={innerContent}>
-                <SpwMonacoPlugin editor={editor} content={innerContent} tabName={tabName}/>
-            </SpwParserContextProvider>
-        </EditorContainer>
-    );
-});
+    return <EditorContainer {...wrapperProps}>
+        <MonacoEditor theme={'spw-dark'}
+                      language={'spw'}
+                      onMount={editorProps.onMount}
+                      onChange={editorProps.onChange}
+                      options={editorProps.options}
+                      value={editorProps.value}
+                      width={editorProps.width}
+                      height={editorProps.height}/>
+        <MonacoVimBar editor={editor} enabled={vim} showVimBar={!config.preferences?.readOnly}/>
+        <EditorConfigMenu/>
+        <SpwParserContextProvider content={innerContent}>
+            <SpwMonacoPlugin editor={editor} content={innerContent} tabName={tabName}/>
+        </SpwParserContextProvider>
+    </EditorContainer>;
+};
 export function SpwEditor(properties: SpwEditorProps) {
     return (
         <EditorConfigContext.Provider value={properties}>

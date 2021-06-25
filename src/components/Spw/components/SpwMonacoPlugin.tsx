@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {memo} from 'react';
 import {useSpwMonacoPlugin} from '../hooks/monaco/plugins/useSpwMonacoPlugin';
 import {ISpwParserStateContext, SpwParserContextConsumer} from '../context/parsing/SpwParserContext';
 import {ErrorAlert} from './error/ErrorAlert';
@@ -14,7 +14,8 @@ function render([value]: [ISpwParserStateContext, any]) {
 /**
  * Element that registers and provides some event handlers for the Spw language
  */
-export function SpwMonacoPlugin({editor, content, tabName}: SpwPluginProps) {
-    useSpwMonacoPlugin({id: tabName, editor, src: content});
-    return <SpwParserContextConsumer>{render}</SpwParserContextConsumer>;
-}
+export const SpwMonacoPlugin =
+    memo(({editor, content, tabName}: SpwPluginProps) => {
+        useSpwMonacoPlugin({id: tabName, editor, src: content});
+        return <SpwParserContextConsumer>{render}</SpwParserContextConsumer>;
+    });

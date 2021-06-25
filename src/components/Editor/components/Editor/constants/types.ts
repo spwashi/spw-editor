@@ -6,17 +6,24 @@ type ContentSource =
         content: string
         document?: undefined;
         children?: undefined;
-    } | {
+    }
+    | {
         document: {
             id: string,
             content: string
         }
         content?: undefined;
         children?: undefined;
-    } | {
+    }
+    | {
         content?: undefined;
         document?: undefined;
         children: string
+    }
+    | {
+        content?: undefined;
+        document?: undefined;
+        children?: undefined
     };
 
 export type SpwEditorProps =
@@ -25,4 +32,5 @@ export type SpwEditorProps =
         enableVim?: boolean;
         preferences?: IEditorPreferences;
         events?: EditorEventHandlers
-    } & (ContentSource);
+    }
+    & (ContentSource);

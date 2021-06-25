@@ -19,11 +19,12 @@ export function ErrorAlert({error}: { error: any }) {
         fontSize:   '1.5rem',
         zIndex:     1,
     };
+    console.error(error);
     return (
         <div className={'error'} style={wrapperStyle as any}>
             <div className={'title'} style={titleStyle}>Error</div>
             <div className="content">
-                <pre style={{fontSize: '1rem'}}><ReactJson src={error}/></pre>
+                <pre style={{fontSize: '1rem'}}><ReactJson src={typeof error === 'object' ? error : {error}}/></pre>
             </div>
         </div>
     )

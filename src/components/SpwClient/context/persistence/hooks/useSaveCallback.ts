@@ -16,7 +16,7 @@ export function useSaveCallback(concept: PartialSpwConcept | null, dispatch: ISp
     const {label, hash} = concept || {};
     return useCallback(function save(src: string) {
         if (!label) {
-            alert('Not saving an unlabeled concept')
+            console.log('Not saving an unlabeled concept')
             return;
         }
         if(!src) {

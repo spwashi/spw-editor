@@ -45,7 +45,10 @@ export function useEditorSave(content: string | null, save?: EditorDumbsaveHandl
     const [state, dispatch]  = useReducer(reducer, initSaveReducerState())
     const emitCompleteEvent  = useCallback(() => dispatch({type: 'complete-save'}), [dispatch]);
     const contentRef         = useContentRef(content);
-    const initiateSave       = () => save ? save(`${contentRef.current}`) : null;
+    const initiateSave       = () => {
+        const content = `${contentRef.current}`;
+        return save ? save(content) : null;
+    };
 
     // effects
     useDidMountEffect(() => { dispatch({type: 'begin-save'}) }, [savekeyLastPressed]);

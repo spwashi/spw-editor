@@ -6,6 +6,7 @@ import classNames from 'classnames';
 import {useReducerContext} from '../../../../../../util/ReducerContext';
 import {EditorConfigContext} from '../../../../context/config/context';
 
+
 type Editor = nsEditor.IStandaloneCodeEditor;
 
 const VimBarWrapper =
@@ -17,6 +18,9 @@ const VimBarWrapper =
               left: 10px;
               display: inline-flex;
               align-items: center;
+              &:empty {
+                  display: none;
+              }
               button {
                   background: transparent;
                   border: thin solid white;
@@ -39,15 +43,18 @@ function useIsVimActuallyEnabled(enabled: boolean | undefined) {
         return enabled;
     }, [enabled, editorConfig])
 }
-export function MonacoVimBar({editor, enabled}: { editor?: Editor | null, enabled?: boolean | undefined }) {
+
+export function MonacoVimBar({
+                                 showVimBar = true,
+                                 editor,
+                                 enabled,
+                             }: { showVimBar?: boolean, editor?: Editor | null, enabled?: boolean | undefined }) {
     const vimBar = useRef() as MutableRefObject<HTMLDivElement>;
     enabled      = useIsVimActuallyEnabled(enabled);
     useVimMode({editor, el: vimBar.current, enabled});
 
     if (!enabled) return null;
     return (
-        <VimBarWrapper className={classNames({enabled})}>
-            <div ref={vimBar}/>
-        </VimBarWrapper>
+        <VimBarWrapper className={classNames({enabled})}>{showVimBar && <div ref={vimBar}/>}</VimBarWrapper>
     )
 }

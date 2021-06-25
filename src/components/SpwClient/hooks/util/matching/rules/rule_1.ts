@@ -1,17 +1,19 @@
-import {Runtime} from '@spwashi/spw';
-import {SpwNode} from '@spwashi/spw/constructs/ast/nodes/abstract/node';
 import {getAllNodesWithKey} from '../getAllNodesWithKey';
 import {NodeSelection} from '../nodeSelection';
-import {SpwItemKind} from '@spwashi/spw/constructs';
-import {SpwItem} from '@spwashi/spw/constructs/ast/abstract/item';
+import {Runtime} from '@spwashi/spw/constructs/runtime/runtime';
+import {Construct} from '@spwashi/spw/constructs/ast/_abstract/construct';
+import {ConstructKind} from '@spwashi/spw/constructs/ast/_types/kinds';
+import { Node } from '@spwashi/spw/constructs/ast/nodes/_abstract/node';
 
+type SpwItem = Construct;
+type SpwItemKind = ConstructKind;
 export async function rule_1(nodes: NodeSelection, runtime: Runtime): Promise<NodeSelection> {
     const arr = nodes.nodes;
 
     if (!arr?.length) return new NodeSelection;
     const mapped = await Promise.all(arr.flatMap(getNodeMapper(runtime)).filter(i => !!i));
 
-    return NodeSelection.from(mapped.flatMap(i => i).filter(i => i !== null) as SpwNode<SpwItemKind>[])
+    return NodeSelection.from(mapped.flatMap(i => i).filter(i => i !== null) as Node<SpwItemKind>[])
 }
 
 function getNodeMapper(runtime: Runtime) {
