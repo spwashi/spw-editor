@@ -30,7 +30,6 @@ export function initEditorConfig(preferences: IEditorPreferences, content: strin
               {
                   fontSize:              fontSize,
                   minimap:               {enabled: false},
-                  renderIndentGuides:    false,
                   fontFamily:            'JetBrains Mono, Fira Code, monospace',
                   fontLigatures:         true,
                   showFoldingControls:   'always',
