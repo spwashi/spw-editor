@@ -8,6 +8,7 @@ import styled from 'styled-components';
 import {useLocalStorage} from '@spwashi/react-utils-dom'
 import {useSaveCallback} from '../../components/SpwClient/context/persistence/hooks/useSaveCallback';
 import {useDropzone} from 'react-dropzone';
+import {Helmet} from 'react-helmet';
 
 const useQuery = () => new URLSearchParams(useLocation().search);
 type AppRouteParams = { hash: string };
@@ -61,16 +62,25 @@ function useMounted() {
 export function EditorClientRouteComponent() {
     const urlParams                  = useQuery();
     const fontSize                   = useFontSize();
-    const mode                       = (urlParams.get('mode')) as EditorMode;
     const {hash: _hash}              = useParams<AppRouteParams>();
     // concept ID
     const [specifiedHash, setHash]   = useState<string | null>(_hash);
     const [specifiedLabel, setLabel] = useState<string | null>(null);
-    const [state, dispatch]          = usePersistenceContext({label: specifiedLabel, hash: specifiedHash});
-    const save                       = useSaveCallback({label: specifiedLabel, hash: specifiedHash}, dispatch);
-    const loadedItem                 = state.loadedItem?.['[server]']?.item;
-    const history                    = useHistory();
-    const mounted                    = useMounted();
+
+    const mode =
+              (
+                  urlParams.get('mode') ?? (
+                      specifiedLabel && !_hash
+                      ? 'editor'
+                      : undefined
+                  )
+              ) as EditorMode;
+
+    const [state, dispatch] = usePersistenceContext({label: specifiedLabel, hash: specifiedHash});
+    const save              = useSaveCallback({label: specifiedLabel, hash: specifiedHash}, dispatch);
+    const loadedItem        = state.loadedItem?.['[server]']?.item;
+    const history           = useHistory();
+    const mounted           = useMounted();
     useEffect(() => { setHash(_hash) }, [_hash])
     useEffect(() => {
         if (!mounted) return;
@@ -94,6 +104,9 @@ export function EditorClientRouteComponent() {
         <AppWrapper className="SpwEditor--AppRoot">
             <div className={'ConceptSelector--Wrapper'}>
                 <ConceptChooser value={specifiedLabel} onChange={l => { setLabel(l) }}/>
+                <Helmet>
+                    <title>{'Spw Editor -' + !!specifiedHash?.length ? specifiedLabel : 'Home'}</title>
+                </Helmet>
             </div>
             <div {...getRootProps()}
                  tabIndex={-1}

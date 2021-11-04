@@ -12,13 +12,13 @@ export default function ComponentSwitch({editor, tree}: BodyParams) {
     const {events, inline, preferences, ...rest} = editor ?? {};
     return (
         <div style={{display: 'flex', height: '100%', width: '100%', overflow: 'hidden'}}>
-            <SpwEditor key={'spw'}
-                       enableVim={true}
-                       preferences={preferences}
-                       inline={inline}
-                       events={events}
-                       {...rest} />
-            {tree && <Tree content={tree.content}/>}
+            {editor && <SpwEditor key={'spw'}
+                                  enableVim={true}
+                                  preferences={preferences}
+                                  inline={inline}
+                                  events={events}
+                                  {...rest} />}
+            {tree && <Tree content={tree.content} key={tree.content}/>}
         </div>
     );
 }

@@ -1,7 +1,7 @@
 // Hook
 import React, {useCallback, useEffect, useState} from 'react';
 import {SpwEditor} from './SpwEditor';
-import {initRuntime} from '@spwashi/spw/constructs/runtime/_util/initializers/runtime';
+import {initRuntimeWithSrc} from '@spwashi/spw/constructs/runtime/_util/initializers/runtime';
 
 type Props = { value: string, onChange: (v: string) => unknown, };
 
@@ -32,7 +32,7 @@ export function InlineSpwEditor({value, onChange: onValueChange}: Props & { valu
                 setParsed(false)
                 return;
             }
-            const _runtime = initRuntime(`${pendingVal}`);
+            const _runtime = initRuntimeWithSrc(`${pendingVal}`);
             const key      = _runtime.registers?.subject?.entries[0].item.key;
             setParsed(key ? `${key}` : false)
         } catch (e) {

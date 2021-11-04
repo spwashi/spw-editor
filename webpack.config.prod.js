@@ -3,11 +3,19 @@ const HtmlWebpackPlugin    = require("html-webpack-plugin");
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 const MonacoWebpackPlugin  = require('monaco-editor-webpack-plugin');
+const TerserPlugin         = require("terser-webpack-plugin");
 const webpack              = require("webpack");
+const CopyPlugin           = require("copy-webpack-plugin");
+
 
 const doAnalyze = false;
 const plugins   = [
     new CleanWebpackPlugin(),
+    new CopyPlugin({
+                       patterns: [
+                           {from: "src/assets/raw"},
+                       ],
+                   }),
     new HtmlWebpackPlugin({template: path.resolve(__dirname, 'src/assets/index.html')}),
     doAnalyze && new BundleAnalyzerPlugin(),
     new webpack.DefinePlugin({
@@ -26,6 +34,14 @@ module.exports  =
                                   devServer:    undefined,
                                   optimization: {
                                       runtimeChunk: 'single',
+                                      minimizer:    [
+                                          new TerserPlugin({
+                                                               terserOptions: {
+                                                                   keep_classnames: true,
+                                                                   keep_fnames:     true
+                                                               }
+                                                           })
+                                      ],
                                       splitChunks:  {
                                           chunks:             'all',
                                           maxInitialRequests: Infinity,

@@ -19,7 +19,6 @@ export function ErrorAlert({error}: { error: any }) {
         fontSize:   '1.5rem',
         zIndex:     1,
     };
-    console.error(error);
     return (
         <div className={'error'} style={wrapperStyle as any}>
             <div className={'title'} style={titleStyle}>Error</div>

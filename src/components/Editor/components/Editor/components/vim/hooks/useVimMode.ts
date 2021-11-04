@@ -12,14 +12,13 @@ export function useVimMode({editor, el, enabled}: VimModeParams) {
     const dispose = useCallback(() => {
         const current = vimModeRef.current;
         current?.dispose();
-        console.log('DISPOSING')
         vimModeRef.current = null;
     }, [vimModeRef.current]);
 
     useEffect(
         () => {
             if (editor && enabled) {
-                console.log({el, editor, enabled})
+                // console.log({el, editor, enabled})
                 try {
                     vimModeRef.current = initVimMode(editor, el);
                     return dispose

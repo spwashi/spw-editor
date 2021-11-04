@@ -8,7 +8,7 @@ import {useMonaco} from '@monaco-editor/react';
 import {Monaco} from '../../../../Editor/types';
 import {useCodeLensProvider} from './useCodeLensProvider';
 import {useReducerContext} from '../../../../../util/ReducerContext';
-import {initRuntime} from '@spwashi/spw/constructs/runtime/_util/initializers/runtime';
+import {initRuntimeWithSrc} from '@spwashi/spw/constructs/runtime/_util/initializers/runtime';
 import {Runtime} from '@spwashi/spw/constructs/runtime/runtime';
 
 interface SpwMonacoPluginParams {
@@ -24,7 +24,7 @@ interface SpwMonacoPluginParams {
 
 function parse(src: string) {
     try {
-        return src ? initRuntime(src) : null;
+        return src ? initRuntimeWithSrc(src) : null;
     } catch (e) {
         return null;
     }

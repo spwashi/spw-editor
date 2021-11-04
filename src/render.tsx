@@ -10,9 +10,9 @@ function render(Component = App) {
 }
 
 if (module.hot) {
-    module.hot.accept('./components/App',
+    module.hot.accept('./components/Spw/App',
                       () => {
-                          const NewApp = require('./components/App').default;
+                          const NewApp = require('./components/Spw/App').default;
                           render(NewApp)
                       })
 }

@@ -1,5 +1,5 @@
-import {ConstructKind} from '@spwashi/spw/constructs/ast/_types/kinds';
 import {Node} from '@spwashi/spw/constructs/ast/nodes/_abstract/node';
+import {ConstructKind} from '@spwashi/spw/constructs/top/kinds';
 
 type SpwItemKind = ConstructKind;
 

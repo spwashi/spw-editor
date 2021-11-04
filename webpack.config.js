@@ -21,9 +21,12 @@ module.exports =
             devServer:
                      {
                          hot:                true,
-                         contentBase:        './out',
+                         static:             './out',
                          port:               6006,
                          historyApiFallback: true,
+                         client:             {
+                             logging: 'info',
+                         },
                      },
             module:
                      {
@@ -74,7 +77,6 @@ module.exports =
             plugins:
                      [
                          new HtmlWebpackPlugin({template: path.resolve(__dirname, 'src/assets/index.html')}),
-                         new webpack.HotModuleReplacementPlugin(),
                          isProd && new BundleAnalyzerPlugin(),
                          isProd && new CleanWebpackPlugin(),
                          new webpack.DefinePlugin({

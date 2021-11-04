@@ -21,13 +21,8 @@ function getNodeMapper(runtime: Runtime) {
         const kind = node.kind as SpwItemKind;
 
         switch (kind) {
-            case 'channel':
-                if (node.key === '#') return [node];
-                return getAllNodesWithKey(runtime, node.key);
             case 'anchor':
                 return getAllNodesWithKey(runtime, node.key)
-            case 'perspective':
-            case 'performance':
             default:
                 return [node];
         }

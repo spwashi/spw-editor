@@ -1,4 +1,4 @@
-import {rules} from './theme';
+import {colors, rules} from './theme';
 import {editor} from 'monaco-editor/esm/vs/editor/editor.api';
 import {Monaco} from '../../../../../types';
 import {tokenizer} from '@spwashi/spw/monaco';
@@ -9,7 +9,7 @@ export function initTheme(m: Monaco) {
     languages.setMonarchTokensProvider('spw', {tokenizer});
     const themeData: editor.IStandaloneThemeData =
               {
-                  colors:  {'editor.background': '#1c2024'},
+                  colors: colors,
                   inherit: false,
                   base:    'vs-dark',
                   rules:   rules,

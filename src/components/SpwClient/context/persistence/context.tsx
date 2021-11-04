@@ -83,7 +83,7 @@ function useCompleteSync(state: ISpwServiceState, dispatch: ISpwServiceDispatch,
     useEffect(
         () => {
             if (!state.loading) {
-                console.info('not completing sync: no item is loading')
+                // console.info('not completing sync: no item is loading')
                 return;
             }
             let {label, hash} = state.loading.item || {};
@@ -152,7 +152,7 @@ export function usePersistenceContext({hash, label}: PersistenceContextProps = {
     useEffect(
         () => {
             if (!state.saving) {
-                console.info('not completing save: no item is loading')
+                // console.info('not completing save: no item is loading')
 
                 return;
             }
@@ -170,11 +170,11 @@ export function usePersistenceContext({hash, label}: PersistenceContextProps = {
             (() => {
                 const concept = getItem('[client]');
                 if (!concept) {
-                    console.log('not completing client save: no item is being saved');
+                    // console.log('not completing client save: no item is being saved');
                     return;
                 }
                 if (!label) {
-                    console.log('not completing client save: no label was provided');
+                    // console.log('not completing client save: no label was provided');
                     return;
                 }
                 setLocalItem(label, concept);
@@ -185,8 +185,8 @@ export function usePersistenceContext({hash, label}: PersistenceContextProps = {
                     if (saveLocation !== 'server') return;
                     const concept = getItem('[server]');
                     if (!concept) {
-                        console.log(state)
-                        console.log('not completing server save: no item is being saved');
+                        // console.log(state)
+                        // console.log('not completing server save: no item is being saved');
                         return;
                     }
                     saveServerItem(concept)
